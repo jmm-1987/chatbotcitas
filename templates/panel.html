@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Panel de Control - Citas Peluquería</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 0; }
+    .panel-container { max-width: 500px; margin: 40px auto; background: #fff; border-radius: 10px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); padding: 30px; }
+    h2 { color: #2196f3; text-align: center; }
+    label { font-weight: bold; }
+    .horas { margin-top: 20px; }
+    .hora-libre { background: #e3f7e3; color: #219653; border: 1px solid #b7e4b7; border-radius: 6px; padding: 6px 12px; margin: 4px; display: inline-block; }
+    .hora-ocupada { background: #ffeaea; color: #c0392b; border: 1px solid #f5b7b1; border-radius: 6px; padding: 6px 12px; margin: 4px; display: inline-block; text-decoration: line-through; }
+    .citas-list { margin-top: 20px; }
+    .cita { background: #f0f0f0; border-radius: 6px; padding: 8px 12px; margin-bottom: 8px; }
+  </style>
+</head>
+<body>
+  <div class="panel-container">
+    <h2>Panel de Control de Citas</h2>
+    <label for="fecha">Selecciona un día:</label>
+    <input type="date" id="fecha" />
+    <div class="horas" id="horas"></div>
+    <div class="citas-list" id="citas"></div>
+  </div>
+  <script>
+    const HORAS = [
+      '10:00', '10:30', '11:00', '11:30',
+      '12:00', '12:30', '13:00', '13:30',
+      '16:00', '16:30', '17:00', '17:30',
+      '18:00', '18:30', '19:00', '19:30'
+    ];
+    const fechaInput = document.getElementById('fecha');
+    const horasDiv = document.getElementById('horas');
+    const citasDiv = document.getElementById('citas');
+
+    fechaInput.addEventListener('change', async function() {
+      const dia = this.value;
+      if (!dia) return;
+      horasDiv.innerHTML = '<em>Cargando disponibilidad...</em>';
+      citasDiv.innerHTML = '';
+      // Consultar horas ocupadas
+      const res = await fetch('/citas_dia', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ dia })
+      });
+      const data = await res.json();
+      // Mostrar horas libres y ocupadas
+      horasDiv.innerHTML = '';
+      HORAS.forEach(h => {
+        if (data.ocupadas.includes(h)) {
+          horasDiv.innerHTML += `<span class='hora-ocupada'>${h}</span>`;
+        } else {
+          horasDiv.innerHTML += `<span class='hora-libre'>${h}</span>`;
+        }
+      });
+      // Mostrar citas del día
+      if (data.citas && data.citas.length) {
+        citasDiv.innerHTML = '<h4>Citas del día:</h4>';
+        data.citas.forEach(cita => {
+          citasDiv.innerHTML += `<div class='cita'><b>${cita.hora}</b> - ${cita.servicio} - ${cita.nombre} (${cita.telefono||''})</div>`;
+        });
+      } else {
+        citasDiv.innerHTML = '<em>No hay citas para este día.</em>';
+      }
+    });
+  </script>
+</body>
+</html> 

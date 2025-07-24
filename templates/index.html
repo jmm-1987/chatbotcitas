@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chatbot Burbuja</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #fff0f6; /* fondo rosa muy claro */
+    }
+
+    #chat-widget {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 350px;
+      height: 500px;
+      background: #fff;
+      border: 2px solid #e1bee7; /* lila claro */
+      border-radius: 18px;
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 9999;
+      box-shadow: 0 5px 20px rgba(233, 30, 99, 0.10), 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    #chat-header {
+      background: linear-gradient(90deg, #f8bbd0 0%, #ce93d8 100%); /* degradado rosa-lila */
+      color: #fff;
+      padding: 18px;
+      font-weight: bold;
+      text-align: center;
+      font-size: 20px;
+      letter-spacing: 1px;
+      border-bottom: 2px solid #f3e5f5;
+    }
+
+    #chat-body {
+      flex-grow: 1;
+      padding: 14px;
+      overflow-y: auto;
+      height: 100%;
+      color: #7b1fa2;
+      background: #fff0f6;
+    }
+
+    #chat-input {
+      display: flex;
+      border-top: 1.5px solid #f8bbd0;
+      background: #fce4ec;
+    }
+
+    #chat-input input {
+      flex-grow: 1;
+      border: none;
+      padding: 12px;
+      font-size: 15px;
+      background: #fff;
+      color: #7b1fa2;
+      border-radius: 0 0 0 12px;
+    }
+
+    #chat-input button {
+      background: linear-gradient(90deg, #f8bbd0 0%, #ce93d8 100%);
+      color: #fff;
+      border: none;
+      padding: 12px 18px;
+      font-size: 16px;
+      cursor: pointer;
+      border-radius: 0 0 12px 0;
+      font-weight: bold;
+      box-shadow: 0 2px 6px rgba(233, 30, 99, 0.10);
+      transition: background 0.2s;
+    }
+    #chat-input button:hover {
+      background: #ba68c8;
+    }
+
+    #chat-body button {
+      background: linear-gradient(90deg, #f8bbd0 0%, #ce93d8 100%);
+      border: 1.5px solid #fff8e1;
+      color: #7b1fa2;
+      margin: 5px 5px 0 0;
+      padding: 9px 16px;
+      border-radius: 22px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 500;
+      box-shadow: 0 2px 6px rgba(233, 30, 99, 0.10);
+      transition: all 0.2s ease;
+    }
+
+    #chat-body button:hover {
+      background: #f06292;
+      color: #fff;
+      border-color: #f8bbd0;
+    }
+
+    #chat-toggle {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: linear-gradient(135deg, #f8bbd0 0%, #ce93d8 100%);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      font-size: 30px;
+      cursor: pointer;
+      z-index: 10000;
+      box-shadow: 0 0 10px #f8bbd0, 0 2px 8px rgba(0,0,0,0.08);
+      transition: background 0.2s;
+      border: 2px solid #fff8e1;
+    }
+    #chat-toggle:hover {
+      background: #f06292;
+    }
+
+    #chat-callout {
+      position: fixed;
+      bottom: 95px;
+      right: 20px;
+      background: #f8bbd0;
+      color: #7b1fa2;
+      padding: 10px 18px;
+      border-radius: 18px;
+      box-shadow: 0 4px 12px rgba(233, 30, 99, 0.10);
+      z-index: 9998;
+      display: none;
+      animation: callout-fade-in 0.5s ease;
+      font-weight: 500;
+      border: 1.5px solid #fff8e1;
+    }
+
+    #chat-callout::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      right: 22px;
+      border-width: 8px;
+      border-style: solid;
+      border-color: #f8bbd0 transparent transparent transparent;
+    }
+
+    @keyframes callout-fade-in {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* --- RESPONSIVE: Chatbot a pantalla completa en móvil --- */
+    @media (max-width: 600px) {
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+      #chat-widget {
+        position: fixed;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        top: 0;
+        width: 100vw;
+        height: 100vh;
+        max-width: 100vw;
+        max-height: 100vh;
+        border-radius: 0;
+        border: none;
+        box-shadow: none;
+        z-index: 9999;
+        display: flex !important;
+        flex-direction: column;
+      }
+      #chat-header {
+        font-size: 16px;
+        padding: 12px;
+      }
+      #chat-body {
+        padding: 8px;
+        font-size: 15px;
+      }
+      #chat-input input {
+        font-size: 15px;
+        padding: 12px 8px;
+      }
+      #chat-input button {
+        font-size: 16px;
+        padding: 12px 10px;
+      }
+      #chat-toggle, #chat-callout {
+        display: none !important;
+      }
+      #chat-callout {
+        font-size: 15px;
+        padding: 8px 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Botón flotante -->
+  <button id="chat-toggle">💬</button>
+  <div id="chat-callout">¿Necesitas ayuda?</div>
+
+  <!-- Widget del chatbot -->
+  <div id="chat-widget">
+    <div id="chat-header">Asistente Virtual <span id="chat-close" style="float:right; cursor:pointer; font-weight:normal;">&times;</span></div>
+    <div id="chat-body"></div>
+    <div id="chat-input">
+      <input id="input" type="text" placeholder="Escribe un mensaje..." />
+      <button onclick="sendMessage()">➤</button>
+    </div>
+  </div>
+
+  <script>
+    const chat      = document.getElementById("chat-body");
+    const input     = document.getElementById("input");
+    const toggleBtn = document.getElementById("chat-toggle");
+    const widget    = document.getElementById("chat-widget");
+    const closeBtn  = document.getElementById("chat-close");
+    const callout   = document.getElementById("chat-callout");
+    const API_URL   = "/chat";
+
+    // Variables para el flujo de reserva
+    let reserva = {
+      servicio: null,
+      dia: null,
+      hora: null,
+      nombre: null,
+      telefono: null
+    };
+    let esperandoDia = false;
+    let esperandoHora = false;
+    let esperandoNombre = false;
+    let ultimaCita = null;
+    let esperandoTelefono = false;
+
+    // Mostrar bocadillo proactivo tras 3 segundos
+    setTimeout(() => {
+      if (widget.style.display !== 'flex') {
+        callout.style.display = 'block';
+      }
+    }, 3000);
+
+    // Mostrar/Ocultar Chat
+    toggleBtn.onclick = () => {
+      callout.style.display = 'none';
+      widget.style.display = "flex";
+      toggleBtn.style.display = "none";
+      if(chat.children.length === 0) {
+        mostrarOpcionesPrincipales();
+      }
+    };
+
+    closeBtn.onclick = () => {
+      widget.style.display = "none";
+      toggleBtn.style.display = "block";
+    };
+
+    // --- NUEVO: Mostrar opciones principales al abrir ---
+    function mostrarOpcionesPrincipales(mostrarSaludo = true) {
+      // Eliminar cualquier botón de 'Volver' existente
+      const btnVolver = document.getElementById('btn-volver');
+      if (btnVolver) btnVolver.remove();
+      // Limpiar el chat
+      chat.innerHTML = '';
+      if (mostrarSaludo) {
+        chat.innerHTML += `<p style='text-align:center; margin-bottom:18px;'><strong>¡Hola! 👋 Bienvenida a Peluquería JM, ¿en qué podemos ayudarte hoy?</strong></p>`;
+      }
+      const opciones = [
+        { texto: 'Consultar horarios', accion: 'consultarHorarios', icono: '🕒' },
+        { texto: 'Ver ubicación', accion: 'verUbicacion', icono: '📍' },
+        { texto: 'Carta de servicios', accion: 'cartaServicios', icono: '💇‍♀️' },
+        { texto: 'Solicitar cita', accion: 'solicitarCita', icono: '📅' }
+      ];
+      chat.innerHTML += `<div id='opciones-principales-btns' style='display:flex; flex-wrap:wrap; justify-content:center; gap:18px;'>
+        ${opciones.map(o => `
+          <div class='opcion-animada' onclick=\"opcionPrincipal('${o.accion}')\" style='cursor:pointer; width:110px; text-align:center; background:#fff; border-radius:18px; box-shadow:0 2px 8px #f8bbd0; padding:18px 8px 10px 8px; transition:transform 0.2s;'>
+            <div style='font-size:48px; margin-bottom:8px; display:block;' class='icono-animado'>${o.icono}</div>
+            <div style='font-size:15px; color:#7b1fa2; font-weight:500;'>${o.texto}</div>
+          </div>
+        `).join('')}
+      </div>`;
+      scrollToBottom();
+    }
+
+    // Animación de rebote para los iconos
+    const styleAnim = document.createElement('style');
+    styleAnim.innerHTML = `
+      .opcion-animada:active .icono-animado, .opcion-animada:hover .icono-animado {
+        animation: bounce 0.4s;
+      }
+      @keyframes bounce {
+        0% { transform: scale(1); }
+        30% { transform: scale(1.25); }
+        60% { transform: scale(0.95); }
+        100% { transform: scale(1); }
+      }
+    `;
+    document.head.appendChild(styleAnim);
+
+    // Lógica para cada opción principal
+    window.opcionPrincipal = function(accion) {
+      const btns = document.getElementById('opciones-principales-btns');
+      if (btns) btns.remove();
+      // Limpiar el chat
+      chat.innerHTML = '';
+      if (accion === 'consultarHorarios') {
+        chat.innerHTML += `<p><strong>Nuestro horario de apertura es el siguiente:</strong><br>Lunes a viernes: 09:00 a 18:00<br>Sábados: 10:00 a 13:00</p>`;
+      } else if (accion === 'verUbicacion') {
+        chat.innerHTML += `<p><strong>Ubicación:</strong> <a href='https://maps.google.com/' target='_blank'>Ver en Google Maps</a></p>`;
+      } else if (accion === 'cartaServicios') {
+        chat.innerHTML += `<p><strong>Carta de servicios:</strong></p>`;
+        chat.innerHTML += `<ul style='padding-left:18px;'>
+          <li>Corte de cabello mujer: 18€</li>
+          <li>Corte de cabello hombre: 12€</li>
+          <li>Peinado: 15€</li>
+          <li>Tinte raíz: 22€</li>
+          <li>Mechas: 35€</li>
+          <li>Lavado y secado: 8€</li>
+          <li>Tratamiento hidratante: 20€</li>
+        </ul>`;
+      } else if (accion === 'solicitarCita') {
+        mostrarServicios();
+        return;
+      }
+      // Tras mostrar la info, mostrar solo un botón grande de 'Volver'
+      setTimeout(() => {
+        chat.innerHTML += `<div style='display:flex; justify-content:center; margin-top:20px;'>
+          <button id='btn-volver' style='background:linear-gradient(90deg,#f8bbd0,#ce93d8); color:#fff; border:none; border-radius:24px; font-size:18px; font-weight:bold; padding:16px 38px; box-shadow:0 2px 8px #f8bbd0; cursor:pointer; transition:background 0.2s;'>Volver</button>
+        </div>`;
+        document.getElementById('btn-volver').onclick = function() {
+          mostrarOpcionesPrincipales(false);
+        };
+        scrollToBottom();
+      }, 2000);
+    }
+
+    // Cambiar la llamada inicial a mostrarOpcionesPrincipales
+    function mostrarServicios() {
+      // Flujo original de reserva de cita
+      chat.innerHTML += `<p><strong>¿Qué servicio deseas reservar?</strong></p>`;
+      const servicios = ["Corte de cabello", "Peinado", "Tinte", "Lavado"];
+      chat.innerHTML += `<div id='servicios-btns'>${servicios.map(s => `<button onclick=\"elegirServicio('${s}')\">${s}</button>`).join(' ')}</div>`;
+      scrollToBottom();
+    }
+
+    window.elegirServicio = async function(servicio) {
+      reserva.servicio = servicio;
+      const btns = document.getElementById('servicios-btns');
+      if (btns) btns.remove();
+      chat.innerHTML += `<p><strong>Servicio elegido:</strong> ${servicio}</p>`;
+      chat.innerHTML += `<p><strong>Selecciona un día:</strong></p>`;
+      chat.innerHTML += `<div id='dias-btns'><em>Cargando días...</em></div>`;
+      scrollToBottom();
+      // Pedir días disponibles al backend
+      const res = await fetch('/proximos_dias_disponibles');
+      const data = await res.json();
+      const diasBtns = data.dias.map(d =>
+        `<button onclick=\"elegirDia('${d.fecha}')\" ${d.disponibles === 0 ? 'disabled style=\'opacity:0.5;cursor:not-allowed;\'' : ''}>
+          ${formatearFecha(d.fecha)} (${d.disponibles} cita${d.disponibles===1?'':'s'} disponible${d.disponibles===1?'':'s'})
+        </button>`
+      ).join(' ');
+      document.getElementById('dias-btns').innerHTML = diasBtns;
+      scrollToBottom();
+    }
+
+    function formatearFecha(fechaStr) {
+      const d = new Date(fechaStr);
+      return d.toLocaleDateString('es-ES', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' });
+    }
+
+    window.elegirDia = async function(dia) {
+      reserva.dia = dia;
+      const btns = document.getElementById('dias-btns');
+      if (btns) btns.remove();
+      chat.innerHTML += `<p><strong>Día elegido:</strong> ${formatearFecha(dia)}</p>`;
+      chat.innerHTML += `<p><strong>Selecciona una hora disponible:</strong></p>`;
+      chat.innerHTML += `<div id='horas-btns'><em>Cargando horas...</em></div>`;
+      scrollToBottom();
+      // Consultar horas libres
+      const res = await fetch('/horas_disponibles', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ dia })
+      });
+      const data = await res.json();
+      const todas = [
+        '10:00', '10:30', '11:00', '11:30',
+        '12:00', '12:30', '13:00', '13:30',
+        '16:00', '16:30', '17:00', '17:30',
+        '18:00', '18:30', '19:00', '19:30'
+      ];
+      const horasBtns = todas.map(h =>
+        `<button onclick=\"elegirHora('${h}')\" ${!data.libres.includes(h) ? 'disabled style=\'opacity:0.5;cursor:not-allowed;\'' : ''}>${h}</button>`
+      ).join(' ');
+      document.getElementById('horas-btns').innerHTML = horasBtns;
+      scrollToBottom();
+    }
+
+    window.elegirHora = function(hora) {
+      reserva.hora = hora;
+      const btns = document.getElementById('horas-btns');
+      if (btns) btns.remove();
+      chat.innerHTML += `<p><strong>Hora elegida:</strong> ${hora}</p>`;
+      // Pedir nombre si no lo tenemos
+      if (!reserva.nombre) {
+        chat.innerHTML += `<p><strong>¿Cuál es tu nombre?</strong></p>`;
+        esperandoNombre = true;
+      } else {
+        pedirTelefono();
+      }
+      scrollToBottom();
+    }
+
+    async function reservarCita() {
+      chat.innerHTML += `<p><em>Reservando tu cita...</em></p>`;
+      scrollToBottom();
+      const res = await fetch('/reservar_cita', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nombre: reserva.nombre,
+          servicio: reserva.servicio,
+          dia: reserva.dia,
+          hora: reserva.hora,
+          telefono: reserva.telefono || ''
+        })
+      });
+      const data = await res.json();
+      if (data.ok) {
+        chat.innerHTML += `<p><strong>✅ ¡Cita reservada correctamente!</strong></p>`;
+        // Guardar datos de la última cita
+        ultimaCita = {
+          servicio: reserva.servicio,
+          dia: reserva.dia,
+          hora: reserva.hora
+        };
+        // Preguntar por recordatorio
+        chat.innerHTML += `<p>¿Quieres que te enviemos un recordatorio de tu cita por email?</p>`;
+        chat.innerHTML += `<div id='recordatorio-btns'>
+          <button onclick=\"recordatorioRespuesta('si')\">Sí</button>
+          <button onclick=\"recordatorioRespuesta('no')\">No</button>
+        </div>`;
+      } else {
+        chat.innerHTML += `<p><strong>❌ Error:</strong> ${data.msg}</p>`;
+      }
+      scrollToBottom();
+      // Resetear reserva
+      reserva = {servicio:null,dia:null,hora:null,nombre:null,telefono:null};
+      esperandoDia = false;
+      esperandoHora = false;
+      esperandoNombre = false;
+    }
+
+    window.recordatorioRespuesta = function(resp) {
+      const btns = document.getElementById('recordatorio-btns');
+      if (btns) btns.remove();
+      if (resp === 'si') {
+        chat.innerHTML += `<p>Por favor, introduce tu email:</p>`;
+        esperandoEmail = true;
+      } else {
+        pedirTelefono();
+      }
+      scrollToBottom();
+    }
+
+    function pedirTelefono() {
+      chat.innerHTML += `<p>Por favor, introduce tu teléfono (obligatorio):</p>`;
+      esperandoTelefono = true;
+      scrollToBottom();
+    }
+
+    let esperandoEmail = false;
+
+    input.addEventListener("keydown", e => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        sendMessage();
+      }
+    });
+
+    async function sendMessage(userMessage = null) {
+      if (!userMessage) {
+        userMessage = input.value.trim();
+        if (!userMessage) return;
+        chat.innerHTML += `<p><strong>Tú:</strong> ${userMessage}</p>`;
+        input.value = "";
+      }
+      scrollToBottom();
+
+      // Si estamos esperando el nombre
+      if (esperandoNombre) {
+        reserva.nombre = userMessage;
+        esperandoNombre = false;
+        pedirTelefono();
+        return;
+      }
+      // Si estamos esperando el teléfono
+      if (esperandoTelefono) {
+        // Validar teléfono: mínimo 9 dígitos, solo números, espacios, guiones o +
+        if (!/^([+]?\d[\d\s-]{8,})$/.test(userMessage)) {
+          chat.innerHTML += `<p><strong>El teléfono no es válido. Introdúcelo de nuevo:</strong></p>`;
+          esperandoTelefono = true;
+          scrollToBottom();
+          return;
+        }
+        reserva.telefono = userMessage;
+        esperandoTelefono = false;
+        reservarCita();
+        return;
+      }
+      // Si estamos esperando el email
+      if (esperandoEmail) {
+        esperandoEmail = false;
+        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(userMessage)) {
+          chat.innerHTML += `<p><strong>El email no es válido. Inténtalo de nuevo:</strong></p>`;
+          esperandoEmail = true;
+          scrollToBottom();
+          return;
+        }
+        chat.innerHTML += `<p><em>Enviando recordatorio...</em></p>`;
+        scrollToBottom();
+        const res = await fetch('/enviar_recordatorio', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            email: userMessage,
+            fecha: ultimaCita ? ultimaCita.dia : '',
+            hora: ultimaCita ? ultimaCita.hora : '',
+            servicio: ultimaCita ? ultimaCita.servicio : ''
+          })
+        });
+        const data = await res.json();
+        if (data.ok) {
+          chat.innerHTML += `<p><strong>✅ Recordatorio enviado a ${userMessage}</strong></p>`;
+        } else {
+          chat.innerHTML += `<p><strong>❌ Error al enviar el recordatorio:</strong> ${data.msg}</p>`;
+        }
+        scrollToBottom();
+        return;
+      }
+    }
+
+    function scrollToBottom() {
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+    // Mostrar mensaje de bienvenida automáticamente en móvil
+    window.addEventListener('DOMContentLoaded', function() {
+      if (window.innerWidth <= 600) {
+        widget.style.display = "flex";
+        toggleBtn.style.display = "none";
+      }
+      if(chat.children.length === 0) {
+        mostrarOpcionesPrincipales(true);
+      }
+    });
+  </script>
+
+</body>
+</html>
