@@ -1,0 +1,6 @@
+Flask
+smtplib
+email
+re
+dateparser
+sqlite3 

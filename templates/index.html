@@ -363,18 +363,49 @@
       if (btns) btns.remove();
       chat.innerHTML += `<p><strong>Servicio elegido:</strong> ${servicio}</p>`;
       chat.innerHTML += `<p><strong>Selecciona un día:</strong></p>`;
-      chat.innerHTML += `<div id='dias-btns'><em>Cargando días...</em></div>`;
+      chat.innerHTML += `<div id='calendario-dias'><em>Cargando calendario...</em></div>`;
       scrollToBottom();
       // Pedir días disponibles al backend
       const res = await fetch('/proximos_dias_disponibles');
       const data = await res.json();
-      const diasBtns = data.dias.map(d =>
-        `<button onclick=\"elegirDia('${d.fecha}')\" ${d.disponibles === 0 ? 'disabled style=\'opacity:0.5;cursor:not-allowed;\'' : ''}>
-          ${formatearFecha(d.fecha)} (${d.disponibles} cita${d.disponibles===1?'':'s'} disponible${d.disponibles===1?'':'s'})
-        </button>`
-      ).join(' ');
-      document.getElementById('dias-btns').innerHTML = diasBtns;
+      renderCalendarioDias(data.dias);
       scrollToBottom();
+    }
+
+    function renderCalendarioDias(diasDisponibles) {
+      // Crear un mapa fecha->disponibles
+      const diasMap = {};
+      diasDisponibles.forEach(d => diasMap[d.fecha] = d.disponibles);
+      // Obtener el primer día (YYYY-MM-DD)
+      const primerDia = diasDisponibles[0].fecha;
+      const fechaInicio = new Date(primerDia);
+      // Calcular el primer lunes anterior o igual
+      const primerLunes = new Date(fechaInicio);
+      primerLunes.setDate(fechaInicio.getDate() - ((fechaInicio.getDay() + 6) % 7));
+      // Construir la tabla (4 semanas)
+      let html = `<table style='width:100%;border-collapse:collapse;text-align:center;margin-bottom:10px;'>`;
+      html += `<tr><th>Lun</th><th>Mar</th><th>Mié</th><th>Jue</th><th>Vie</th><th>Sáb</th><th>Dom</th></tr>`;
+      let fecha = new Date(primerLunes);
+      for (let semana = 0; semana < 4; semana++) {
+        html += '<tr>';
+        for (let diaSemana = 0; diaSemana < 7; diaSemana++) {
+          const fechaStr = fecha.toISOString().slice(0,10);
+          if (diasMap[fechaStr] !== undefined) {
+            const disponibles = diasMap[fechaStr];
+            if (disponibles > 0) {
+              html += `<td style='padding:4px;'><button onclick=\"elegirDia('${fechaStr}')\" style='width:100%;background:#fff;border:2px solid #ce93d8;color:#7b1fa2;border-radius:10px;padding:8px 0;font-size:15px;'><div><b>${fecha.getDate()}</b></div><div style='font-size:12px;'>${disponibles} disp.</div></button></td>`;
+            } else {
+              html += `<td style='padding:4px;'><div style='width:100%;background:#f8bbd0;color:#fff;border-radius:10px;padding:8px 0;opacity:0.5;'><b>${fecha.getDate()}</b><div style='font-size:12px;'>0</div></div></td>`;
+            }
+          } else {
+            html += `<td></td>`;
+          }
+          fecha.setDate(fecha.getDate() + 1);
+        }
+        html += '</tr>';
+      }
+      html += '</table>';
+      document.getElementById('calendario-dias').innerHTML = html;
     }
 
     function formatearFecha(fechaStr) {
@@ -384,11 +415,20 @@
 
     window.elegirDia = async function(dia) {
       reserva.dia = dia;
-      const btns = document.getElementById('dias-btns');
+      const btns = document.getElementById('calendario-dias');
       if (btns) btns.remove();
       chat.innerHTML += `<p><strong>Día elegido:</strong> ${formatearFecha(dia)}</p>`;
       chat.innerHTML += `<p><strong>Selecciona una hora disponible:</strong></p>`;
       chat.innerHTML += `<div id='horas-btns'><em>Cargando horas...</em></div>`;
+      // Botón Volver al calendario
+      chat.innerHTML += `<div style='display:flex; justify-content:center; margin-top:10px;'><button id='btn-volver-dia' style='background:linear-gradient(90deg,#f8bbd0,#ce93d8); color:#fff; border:none; border-radius:24px; font-size:16px; font-weight:bold; padding:10px 28px; box-shadow:0 2px 8px #f8bbd0; cursor:pointer; transition:background 0.2s;'>Volver</button></div>`;
+      document.getElementById('btn-volver-dia').onclick = async function() {
+        chat.innerHTML = `<p><strong>Selecciona un día:</strong></p><div id='calendario-dias'><em>Cargando calendario...</em></div>`;
+        const res = await fetch('/proximos_dias_disponibles');
+        const data = await res.json();
+        renderCalendarioDias(data.dias);
+        scrollToBottom();
+      };
       scrollToBottom();
       // Consultar horas libres
       const res = await fetch('/horas_disponibles', {
