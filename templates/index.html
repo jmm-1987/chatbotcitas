@@ -8,7 +8,20 @@
     body {
       font-family: Arial, sans-serif;
       margin: 0;
-      background: #fff0f6; /* fondo rosa muy claro */
+      min-height: 100vh;
+      /* Imagen de fondo elegante, neutra, tipo salón de belleza */
+      background: url('https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1200&q=80') no-repeat center center fixed;
+      background-size: cover;
+      /* Capa de oscurecimiento sutil para legibilidad */
+      position: relative;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(40,40,50,0.30); /* Oscurecimiento neutro */
+      z-index: 0;
+      pointer-events: none;
     }
 
     #chat-widget {
@@ -17,25 +30,27 @@
       right: 20px;
       width: 350px;
       height: 500px;
-      background: #fff;
-      border: 2px solid #e1bee7; /* lila claro */
+      background: linear-gradient(rgba(255,255,255,0.98), rgba(255,255,255,0.98)),
+        url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80') center center/cover no-repeat;
+      border: 2px solid #bdbdbd; /* gris claro */
       border-radius: 18px;
       display: none;
       flex-direction: column;
       overflow: hidden;
       z-index: 9999;
-      box-shadow: 0 5px 20px rgba(233, 30, 99, 0.10), 0 2px 8px rgba(0,0,0,0.08);
+      box-shadow: 0 5px 20px rgba(40,40,50,0.10), 0 2px 8px rgba(0,0,0,0.08);
+      backdrop-filter: blur(8px);
     }
 
     #chat-header {
-      background: linear-gradient(90deg, #f8bbd0 0%, #ce93d8 100%); /* degradado rosa-lila */
+      background: linear-gradient(90deg, #bdbdbd 0%, #90caf9 100%); /* gris a azul claro */
       color: #fff;
       padding: 18px;
       font-weight: bold;
       text-align: center;
       font-size: 20px;
       letter-spacing: 1px;
-      border-bottom: 2px solid #f3e5f5;
+      border-bottom: 2px solid #e3e3e3;
     }
 
     #chat-body {
@@ -43,8 +58,8 @@
       padding: 14px;
       overflow-y: auto;
       height: 100%;
-      color: #7b1fa2;
-      background: #fff0f6;
+      color: #263238;
+      background: transparent;
     }
 
     #chat-input {
@@ -80,30 +95,29 @@
     }
 
     #chat-body button {
-      background: linear-gradient(90deg, #f8bbd0 0%, #ce93d8 100%);
-      border: 1.5px solid #fff8e1;
-      color: #7b1fa2;
+      background: linear-gradient(90deg, #e3e3e3 0%, #90caf9 100%);
+      border: 1.5px solid #bdbdbd;
+      color: #263238;
       margin: 5px 5px 0 0;
       padding: 9px 16px;
       border-radius: 22px;
       cursor: pointer;
       font-size: 14px;
       font-weight: 500;
-      box-shadow: 0 2px 6px rgba(233, 30, 99, 0.10);
+      box-shadow: 0 2px 6px rgba(40,40,50,0.10);
       transition: all 0.2s ease;
     }
-
     #chat-body button:hover {
-      background: #f06292;
+      background: #90caf9;
       color: #fff;
-      border-color: #f8bbd0;
+      border-color: #bdbdbd;
     }
 
     #chat-toggle {
       position: fixed;
       bottom: 20px;
       right: 20px;
-      background: linear-gradient(135deg, #f8bbd0 0%, #ce93d8 100%);
+      background: linear-gradient(135deg, #bdbdbd 0%, #90caf9 100%);
       color: #fff;
       border: none;
       border-radius: 50%;
@@ -112,30 +126,29 @@
       font-size: 30px;
       cursor: pointer;
       z-index: 10000;
-      box-shadow: 0 0 10px #f8bbd0, 0 2px 8px rgba(0,0,0,0.08);
+      box-shadow: 0 0 10px #bdbdbd, 0 2px 8px rgba(0,0,0,0.08);
       transition: background 0.2s;
-      border: 2px solid #fff8e1;
+      border: 2px solid #e3e3e3;
     }
     #chat-toggle:hover {
-      background: #f06292;
+      background: #90caf9;
     }
 
     #chat-callout {
       position: fixed;
       bottom: 95px;
       right: 20px;
-      background: #f8bbd0;
-      color: #7b1fa2;
+      background: #e3e3e3;
+      color: #263238;
       padding: 10px 18px;
       border-radius: 18px;
-      box-shadow: 0 4px 12px rgba(233, 30, 99, 0.10);
+      box-shadow: 0 4px 12px rgba(40,40,50,0.10);
       z-index: 9998;
       display: none;
       animation: callout-fade-in 0.5s ease;
       font-weight: 500;
-      border: 1.5px solid #fff8e1;
+      border: 1.5px solid #bdbdbd;
     }
-
     #chat-callout::after {
       content: '';
       position: absolute;
@@ -143,7 +156,7 @@
       right: 22px;
       border-width: 8px;
       border-style: solid;
-      border-color: #f8bbd0 transparent transparent transparent;
+      border-color: #e3e3e3 transparent transparent transparent;
     }
 
     @keyframes callout-fade-in {
@@ -181,6 +194,9 @@
         z-index: 9999;
         display: flex !important;
         flex-direction: column;
+        background: linear-gradient(rgba(255,255,255,0.98), rgba(255,255,255,0.98)),
+          url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80') center center/cover no-repeat;
+        backdrop-filter: blur(10px);
       }
       #chat-header {
         font-size: 16px;
@@ -217,11 +233,15 @@
   <!-- Widget del chatbot -->
   <div id="chat-widget">
     <div id="chat-header">Asistente Virtual <span id="chat-close" style="float:right; cursor:pointer; font-weight:normal;">&times;</span></div>
+    <div id="logo-ficticio" style="width:100%;display:flex;justify-content:center;align-items:center;background:rgba(255,255,255,0.92);padding:10px 0 2px 0;box-sizing:border-box;">
+      <img src="/static/logo.png" alt="Logo" style="max-width:240px; max-height:90px; object-fit:contain; display:block;" />
+    </div>
     <div id="chat-body"></div>
-    <div id="chat-input">
+    <!-- Eliminado el input y el botón de enviar -->
+    <!-- <div id="chat-input">
       <input id="input" type="text" placeholder="Escribe un mensaje..." />
       <button onclick="sendMessage()">➤</button>
-    </div>
+    </div> -->
   </div>
 
   <script>
@@ -269,8 +289,28 @@
       toggleBtn.style.display = "block";
     };
 
+    // --- NUEVO: Manejo de historial para botón físico de volver ---
+    function pushState(pantalla) {
+      history.pushState({pantalla}, '');
+    }
+    window.addEventListener('popstate', function(e) {
+      if (e.state && e.state.pantalla) {
+        if (e.state.pantalla === 'menu') {
+          mostrarOpcionesPrincipales(false);
+        } else if (e.state.pantalla === 'servicios') {
+          mostrarServicios();
+        } else if (e.state.pantalla === 'calendario') {
+          chat.innerHTML = `<p><strong>Selecciona un día:</strong></p><div id='calendario-dias'><em>Cargando calendario...</em></div>`;
+          fetch('/proximos_dias_disponibles').then(r=>r.json()).then(data=>renderCalendarioDias(data.dias));
+        }
+        // Puedes añadir más pantallas según el flujo
+      }
+    });
+    // --- FIN historial ---
+
     // --- NUEVO: Mostrar opciones principales al abrir ---
     function mostrarOpcionesPrincipales(mostrarSaludo = true) {
+      pushState('menu');
       // Eliminar cualquier botón de 'Volver' existente
       const btnVolver = document.getElementById('btn-volver');
       if (btnVolver) btnVolver.remove();
@@ -318,52 +358,168 @@
       // Limpiar el chat
       chat.innerHTML = '';
       if (accion === 'consultarHorarios') {
-        chat.innerHTML += `<p><strong>Nuestro horario de apertura es el siguiente:</strong><br>Lunes a viernes: 09:00 a 18:00<br>Sábados: 10:00 a 13:00</p>`;
+        chat.innerHTML += `
+        <div style='display:flex; flex-direction:column; align-items:center; margin-bottom:18px;'>
+          <div style='width:90px; height:90px; margin-bottom:10px;'>
+            <svg id='svg-reloj' viewBox='0 0 100 100' width='90' height='90'>
+              <circle cx='50' cy='50' r='45' fill='#fff' stroke='#90caf9' stroke-width='6'/>
+              <circle cx='50' cy='50' r='40' fill='none' stroke='#bdbdbd' stroke-width='2' stroke-dasharray='4 6'/>
+              <line id='hora-hand' x1='50' y1='50' x2='50' y2='28' stroke='#263238' stroke-width='5' stroke-linecap='round'/>
+              <line id='min-hand' x1='50' y1='50' x2='50' y2='18' stroke='#90caf9' stroke-width='3' stroke-linecap='round'/>
+              <circle cx='50' cy='50' r='4' fill='#90caf9'/>
+            </svg>
+          </div>
+          <div style='font-size:20px; color:#263238; font-weight:bold; margin:18px 0 6px 0;'>¡Consulta nuestros horarios!</div>
+          <div style='font-size:16px; color:#263238; text-align:center;'>Lunes a viernes: <b>09:00 a 18:00</b><br>Sábados: <b>10:00 a 13:00</b></div>
+        </div>
+        <style>
+        @keyframes girarHora { 0%{transform:rotate(0deg);} 100%{transform:rotate(360deg);} }
+        @keyframes girarMin { 0%{transform:rotate(0deg);} 100%{transform:rotate(360deg);} }
+        #svg-reloj #hora-hand { transform-origin: 50% 50%; animation: girarHora 12s linear infinite; }
+        #svg-reloj #min-hand { transform-origin: 50% 50%; animation: girarMin 2s linear infinite; }
+        </style>
+        `;
       } else if (accion === 'verUbicacion') {
-        chat.innerHTML += `<p><strong>Ubicación:</strong> <a href='https://maps.google.com/' target='_blank'>Ver en Google Maps</a></p>`;
+        chat.innerHTML += `
+        <div style='display:flex; flex-direction:column; align-items:center; margin:24px 0;'>
+          <div style='font-size:20px; color:#263238; font-weight:bold; margin-bottom:12px;'>Nuestra ubicación</div>
+          <iframe
+            src="https://www.google.com/maps?q=43.3623,-8.4115&z=16&output=embed"
+            width="100%" height="260" style="border:0; border-radius:16px; box-shadow:0 2px 12px #90caf933; max-width:380px;"
+            allowfullscreen=""
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade">
+          </iframe>
+          <a href="https://maps.app.goo.gl/LmkF9h2bCq9mkNGu7" target="_blank" style="margin-top:10px; color:#2196f3; font-weight:bold; text-decoration:none;">Abrir en Google Maps</a>
+        </div>
+        `;
       } else if (accion === 'cartaServicios') {
-        chat.innerHTML += `<p><strong>Carta de servicios:</strong></p>`;
-        chat.innerHTML += `<ul style='padding-left:18px;'>
-          <li>Corte de cabello mujer: 18€</li>
-          <li>Corte de cabello hombre: 12€</li>
-          <li>Peinado: 15€</li>
-          <li>Tinte raíz: 22€</li>
-          <li>Mechas: 35€</li>
-          <li>Lavado y secado: 8€</li>
-          <li>Tratamiento hidratante: 20€</li>
-        </ul>`;
+        chat.innerHTML = renderServicios('Carta de servicios', 'elegirServicio', true, true);
+        scrollToBottom();
+        document.getElementById('btn-volver-servicio-lista').onclick = function() {
+          chat.innerHTML = '';
+          mostrarOpcionesPrincipales(false);
+          scrollToBottom();
+        };
       } else if (accion === 'solicitarCita') {
-        mostrarServicios();
+        // Pantalla de servicios para reservar
+        chat.innerHTML = renderServicios('¿Qué servicio deseas reservar?', 'elegirServicio', true);
+        scrollToBottom();
+        document.getElementById('btn-volver-servicio-lista').onclick = function() {
+          chat.innerHTML = '';
+          mostrarOpcionesPrincipales(false);
+          scrollToBottom();
+        };
+        // El resto igual
         return;
       }
       // Tras mostrar la info, mostrar solo un botón grande de 'Volver'
       setTimeout(() => {
-        chat.innerHTML += `<div style='display:flex; justify-content:center; margin-top:20px;'>
-          <button id='btn-volver' style='background:linear-gradient(90deg,#f8bbd0,#ce93d8); color:#fff; border:none; border-radius:24px; font-size:18px; font-weight:bold; padding:16px 38px; box-shadow:0 2px 8px #f8bbd0; cursor:pointer; transition:background 0.2s;'>Volver</button>
-        </div>`;
+        chat.innerHTML += `
+        <div style='display:flex; justify-content:center; margin-top:16px;'>
+          <button id='btn-volver' class='btn-volver-animado'>
+            <span style='display:inline-flex; align-items:center; gap:8px;'>
+              <svg width='22' height='22' viewBox='0 0 24 24' fill='none' style='vertical-align:middle;'><path d='M15 18l-6-6 6-6' stroke='#2196f3' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/></svg>
+              Volver
+            </span>
+          </button>
+        </div>
+        <style>
+        .btn-volver-animado {
+          background: linear-gradient(90deg,#e3e3e3,#90caf9);
+          color: #2196f3;
+          border: none;
+          border-radius: 28px;
+          font-size: 18px;
+          font-weight: bold;
+          padding: 14px 38px;
+          box-shadow: 0 2px 12px rgba(33,150,243,0.10);
+          cursor: pointer;
+          outline: none;
+          opacity: 0;
+          transform: translateY(20px) scale(0.95);
+          animation: aparecerBtnVolver 0.5s 0.1s forwards;
+          transition: background 0.2s, color 0.2s, transform 0.2s;
+          display: inline-block;
+        }
+        @keyframes aparecerBtnVolver {
+          to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .btn-volver-animado:hover {
+          background: linear-gradient(90deg,#90caf9,#e3e3e3);
+          color: #1565c0;
+          transform: scale(1.04) translateY(-2px);
+          box-shadow: 0 4px 18px rgba(33,150,243,0.18);
+        }
+        </style>
+        `;
         document.getElementById('btn-volver').onclick = function() {
           mostrarOpcionesPrincipales(false);
         };
         scrollToBottom();
-      }, 2000);
+      }, 700);
     }
 
-    // Cambiar la llamada inicial a mostrarOpcionesPrincipales
+    // Función reutilizable para renderizar el bloque de servicios
+    function renderServicios(titulo, onClickServicio, mostrarVolver = true, reservarActivo = true) {
+      const servicios = [
+        {nombre: 'Corte de mujer', precio: '18€', img: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=120&q=80', desc: 'Corte personalizado, asesoría de estilo y acabado profesional.'},
+        {nombre: 'Corte de hombre', precio: '12€', img: 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=crop&w=120&q=80', desc: 'Corte clásico o moderno, incluye lavado y peinado.'},
+        {nombre: 'Peinado', precio: '15€', img: 'https://images.unsplash.com/photo-1519415943484-cfbdfb6c7b51?auto=format&fit=crop&w=120&q=80', desc: 'Peinados para eventos, fiestas o el día a día.'},
+        {nombre: 'Tinte raíz', precio: '22€', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80', desc: 'Coloración de raíces con productos de alta calidad.'},
+        {nombre: 'Mechas', precio: '35€', img: 'https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=120&q=80', desc: 'Mechas naturales o fantasía, técnica a elegir.'},
+        {nombre: 'Lavado y secado', precio: '8€', img: 'https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=120&q=80', desc: 'Lavado relajante y secado con brushing.'},
+        {nombre: 'Tratamiento hidratante', precio: '20€', img: 'https://images.unsplash.com/photo-1503602642458-232111445657?auto=format&fit=crop&w=120&q=80', desc: 'Recupera el brillo y la suavidad de tu cabello.'}
+      ];
+      let html = `<div style='font-size:20px; color:#263238; font-weight:bold; text-align:center; margin:18px 0 18px 0;'>${titulo}</div>`;
+      html += `<div id='servicios-lista' style='display:flex; flex-wrap:wrap; justify-content:center; gap:22px; margin-bottom:18px;'>`;
+      html += servicios.map((s,i) => `
+        <div class='servicio-card anim-serv' style='background:rgba(255,255,255,0.92); border-radius:18px; box-shadow:0 2px 12px #90caf933; width:270px; padding:18px 18px 16px 18px; display:flex; flex-direction:column; align-items:center; transition:transform 0.2s;'>
+          <img src='${s.img}' alt='${s.nombre}' style='width:70px; height:70px; border-radius:50%; object-fit:cover; margin-bottom:12px;'/>
+          <div style='font-family: \'Montserrat\', Arial, sans-serif; font-size:19px; font-weight:700; color:#1565c0; margin-bottom:6px; letter-spacing:0.5px;'>${s.nombre}</div>
+          <div style='font-size:14px; color:#607d8b; font-family: Arial, sans-serif; text-align:center; margin-bottom:10px; min-height:32px;'>${s.desc}</div>
+          <div style='display:flex; justify-content:center; align-items:center; gap:12px; margin-top:2px;'>
+            <span style='display:inline-block; font-family:\'Rubik\', Arial, sans-serif; font-size:18px; font-weight:700; color:#2196f3; background:#fff; border-radius:16px; border:2.5px solid #90caf9; padding:8px 18px; box-shadow:0 2px 8px #90caf955; letter-spacing:0.5px;'>${s.precio}</span>
+            <button class='btn-reservar-servicio' data-servicio="${s.nombre}" ${reservarActivo ? '' : 'disabled'} style='display:inline-flex; align-items:center; gap:6px; background:linear-gradient(90deg,#90caf9,#2196f3); color:#fff; border:none; border-radius:16px; font-size:15px; font-weight:600; padding:8px 16px; box-shadow:0 2px 8px #90caf955; cursor:pointer; transition:background 0.2s; opacity:${reservarActivo ? '1' : '0.6'};'>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="5" width="18" height="16" rx="4" fill="#fff" stroke="#2196f3" stroke-width="1.5"/><rect x="7" y="2" width="2" height="4" rx="1" fill="#2196f3"/><rect x="15" y="2" width="2" height="4" rx="1" fill="#2196f3"/><rect x="7" y="10" width="10" height="2" rx="1" fill="#90caf9"/></svg>
+              Reservar
+            </button>
+          </div>
+        </div>
+      `).join('');
+      html += `</div>`;
+      if (mostrarVolver) {
+        html += `<div style='display:flex; justify-content:center; margin-bottom:10px;'><button id='btn-volver-servicio-lista' style='background:linear-gradient(90deg,#e3e3e3,#90caf9); color:#2196f3; border:none; border-radius:24px; font-size:16px; font-weight:bold; padding:10px 28px; box-shadow:0 2px 8px #90caf933; cursor:pointer; transition:background 0.2s;'>Volver</button></div>`;
+      }
+      // Asignar eventos a los botones 'Reservar' solo en la pantalla de reservar cita
+      if (reservarActivo && onClickServicio) {
+        setTimeout(() => {
+          document.querySelectorAll('.btn-reservar-servicio').forEach(btn => {
+            btn.onclick = function(e) {
+              e.stopPropagation();
+              window[onClickServicio](this.getAttribute('data-servicio'));
+            };
+          });
+        }, 0);
+      }
+      return html;
+    }
+
+    // La función mostrarServicios solo llama a la función reutilizable con el título de selección
     function mostrarServicios() {
-      // Flujo original de reserva de cita
-      chat.innerHTML += `<p><strong>¿Qué servicio deseas reservar?</strong></p>`;
-      const servicios = ["Corte de cabello", "Peinado", "Tinte", "Lavado"];
-      chat.innerHTML += `<div id='servicios-btns'>${servicios.map(s => `<button onclick=\"elegirServicio('${s}')\">${s}</button>`).join(' ')}</div>`;
+      chat.innerHTML = renderServicios('¿Qué servicio deseas reservar?', 'elegirServicio', true);
       scrollToBottom();
+      document.getElementById('btn-volver-servicio-lista').onclick = function() {
+        chat.innerHTML = '';
+        mostrarOpcionesPrincipales(false);
+        scrollToBottom();
+      };
     }
 
     window.elegirServicio = async function(servicio) {
       reserva.servicio = servicio;
-      const btns = document.getElementById('servicios-btns');
-      if (btns) btns.remove();
-      chat.innerHTML += `<p><strong>Servicio elegido:</strong> ${servicio}</p>`;
-      chat.innerHTML += `<p><strong>Selecciona un día:</strong></p>`;
-      chat.innerHTML += `<div id='calendario-dias'><em>Cargando calendario...</em></div>`;
+      // Limpiar pantalla y mostrar calendario directamente
+      chat.innerHTML = `<div id='calendario-dias'><em>Cargando calendario...</em></div>`;
       scrollToBottom();
       // Pedir días disponibles al backend
       const res = await fetch('/proximos_dias_disponibles');
@@ -372,40 +528,98 @@
       scrollToBottom();
     }
 
-    function renderCalendarioDias(diasDisponibles) {
+    function renderCalendarioDias(diasDisponibles, mesOffset = 0) {
+      pushState('calendario');
       // Crear un mapa fecha->disponibles
       const diasMap = {};
       diasDisponibles.forEach(d => diasMap[d.fecha] = d.disponibles);
-      // Obtener el primer día (YYYY-MM-DD)
+      // Obtener el primer día del mes mostrado
       const primerDia = diasDisponibles[0].fecha;
-      const fechaInicio = new Date(primerDia);
-      // Calcular el primer lunes anterior o igual
-      const primerLunes = new Date(fechaInicio);
-      primerLunes.setDate(fechaInicio.getDate() - ((fechaInicio.getDay() + 6) % 7));
-      // Construir la tabla (4 semanas)
-      let html = `<table style='width:100%;border-collapse:collapse;text-align:center;margin-bottom:10px;'>`;
+      let fechaActual = new Date(primerDia);
+      fechaActual.setMonth(fechaActual.getMonth() + mesOffset);
+      fechaActual.setDate(1);
+      const mes = fechaActual.toLocaleString('es-ES', { month: 'long' });
+      const anio = fechaActual.getFullYear();
+      // Calcular el primer lunes anterior o igual (sin domingos)
+      let primerLunes = new Date(fechaActual);
+      while (primerLunes.getDay() !== 1) { // 1 = lunes
+        primerLunes.setDate(primerLunes.getDate() - 1);
+      }
+      // Cabecera con mes y flechas
+      let html = `<div style='display:flex; align-items:center; justify-content:center; gap:18px; margin-bottom:8px;'>
+        <button id='mes-anterior' style='background:none; border:none; color:#2196f3; font-size:22px; cursor:pointer; padding:0 8px;' ${mesOffset<=0?'disabled style="opacity:0.3;cursor:not-allowed;"':''}>&lt;</button>
+        <span style='font-size:18px; font-weight:bold; color:#263238; text-transform:capitalize;'>${mes} ${anio}</span>
+        <button id='mes-siguiente' style='background:none; border:none; color:#2196f3; font-size:22px; cursor:pointer; padding:0 8px;'>&gt;</button>
+      </div>`;
+      html += `<table style='width:100%;border-collapse:collapse;text-align:center;margin-bottom:10px;'>`;
       html += `<tr><th>Lun</th><th>Mar</th><th>Mié</th><th>Jue</th><th>Vie</th><th>Sáb</th><th>Dom</th></tr>`;
-      let fecha = new Date(primerLunes);
-      for (let semana = 0; semana < 4; semana++) {
+      let fecha = new Date(fechaActual);
+      fecha.setDate(1);
+      let primerDiaSemana = fecha.getDay(); // 0=domingo, 1=lunes, ..., 6=sábado
+      let offset = (primerDiaSemana + 6) % 7;
+      let diasEnMes = new Date(fechaActual.getFullYear(), fechaActual.getMonth() + 1, 0).getDate();
+      let dia = 1;
+      for (let fila = 0; fila < 6; fila++) {
         html += '<tr>';
-        for (let diaSemana = 0; diaSemana < 7; diaSemana++) {
-          const fechaStr = fecha.toISOString().slice(0,10);
-          if (diasMap[fechaStr] !== undefined) {
-            const disponibles = diasMap[fechaStr];
-            if (disponibles > 0) {
-              html += `<td style='padding:4px;'><button onclick=\"elegirDia('${fechaStr}')\" style='width:100%;background:#fff;border:2px solid #ce93d8;color:#7b1fa2;border-radius:10px;padding:8px 0;font-size:15px;'><div><b>${fecha.getDate()}</b></div><div style='font-size:12px;'>${disponibles} disp.</div></button></td>`;
-            } else {
-              html += `<td style='padding:4px;'><div style='width:100%;background:#f8bbd0;color:#fff;border-radius:10px;padding:8px 0;opacity:0.5;'><b>${fecha.getDate()}</b><div style='font-size:12px;'>0</div></div></td>`;
-            }
-          } else {
+        for (let col = 0; col < 7; col++) {
+          let celdaNum = fila * 7 + col;
+          if (celdaNum < offset || dia > diasEnMes) {
             html += `<td></td>`;
+          } else {
+            let fechaStr = new Date(fechaActual.getFullYear(), fechaActual.getMonth(), dia).toISOString().slice(0,10);
+            if (col === 6) {
+              // Domingo: inhabilitado, gris
+              html += `<td style='padding:4px;'><div style='width:100%;background:#f3f3f3;color:#bdbdbd;border-radius:10px;padding:8px 0;opacity:0.7;position:relative;'><b>${dia}</b></div></td>`;
+            } else {
+              if (diasMap[fechaStr] !== undefined) {
+                const disponibles = diasMap[fechaStr];
+                if (disponibles > 0) {
+                  html += `<td style='padding:4px;'><button onclick=\"elegirDia('${fechaStr}')\" style='width:100%;background:#fff;border:2px solid #90caf9;color:#1565c0;border-radius:10px;padding:8px 0;font-size:15px;position:relative;'>
+                    <div><b>${dia}</b></div>
+                    <div style='margin-top:4px;'><span style='display:inline-block; background:#43a047; color:#fff; border-radius:50%; width:28px; height:28px; line-height:28px; font-size:15px; font-weight:bold;'>${disponibles}</span></div>
+                  </button></td>`;
+                } else {
+                  html += `<td style='padding:4px;'><div style='width:100%;background:#fff;color:#b71c1c;border-radius:10px;padding:8px 0;opacity:0.7;position:relative;'><b>${dia}</b><div style='margin-top:4px;'><span style='display:inline-block; background:#b71c1c; color:#fff; border-radius:50%; width:28px; height:28px; line-height:28px; font-size:15px; font-weight:bold;'>0</span></div></div></td>`;
+                }
+              } else {
+                html += `<td></td>`;
+              }
+            }
+            dia++;
           }
-          fecha.setDate(fecha.getDate() + 1);
         }
         html += '</tr>';
       }
       html += '</table>';
+      // Leyenda
+      html += `<div style='display:flex; align-items:center; gap:16px; justify-content:center; margin-bottom:10px;'>
+        <span style='display:inline-flex; align-items:center; gap:6px;'><span style='display:inline-block; background:#43a047; color:#fff; border-radius:50%; width:22px; height:22px; line-height:22px; font-size:13px; font-weight:bold; text-align:center;'></span> Citas disponibles</span>
+        <span style='display:inline-flex; align-items:center; gap:6px;'><span style='display:inline-block; background:#b71c1c; color:#fff; border-radius:50%; width:22px; height:22px; line-height:22px; font-size:13px; font-weight:bold; text-align:center;'>-</span> Sin citas</span>
+      </div>`;
+      // Botón Volver a selección de servicio
+      html += `<div style='display:flex; justify-content:center; margin-bottom:10px;'><button id='btn-volver-servicio' style='background:linear-gradient(90deg,#e3e3e3,#90caf9); color:#2196f3; border:none; border-radius:24px; font-size:16px; font-weight:bold; padding:10px 28px; box-shadow:0 2px 8px #90caf933; cursor:pointer; transition:background 0.2s;'>Volver</button></div>`;
       document.getElementById('calendario-dias').innerHTML = html;
+      document.getElementById('btn-volver-servicio').onclick = function() {
+        chat.innerHTML = '';
+        mostrarServicios();
+        scrollToBottom();
+      };
+      // Navegación de meses
+      document.getElementById('mes-siguiente').onclick = async function() {
+        const res = await fetch('/proximos_dias_disponibles');
+        const data = await res.json();
+        renderCalendarioDias(data.dias, mesOffset + 1);
+      };
+      const btnAnt = document.getElementById('mes-anterior');
+      if (btnAnt) {
+        btnAnt.onclick = async function() {
+          if (mesOffset > 0) {
+            const res = await fetch('/proximos_dias_disponibles');
+            const data = await res.json();
+            renderCalendarioDias(data.dias, mesOffset - 1);
+          }
+        };
+      }
     }
 
     function formatearFecha(fechaStr) {
@@ -414,6 +628,7 @@
     }
 
     window.elegirDia = async function(dia) {
+      pushState('horas');
       reserva.dia = dia;
       const btns = document.getElementById('calendario-dias');
       if (btns) btns.remove();
@@ -451,6 +666,7 @@
     }
 
     window.elegirHora = function(hora) {
+      pushState('nombre');
       reserva.hora = hora;
       const btns = document.getElementById('horas-btns');
       if (btns) btns.remove();
@@ -525,74 +741,8 @@
 
     let esperandoEmail = false;
 
-    input.addEventListener("keydown", e => {
-      if (e.key === "Enter") {
-        e.preventDefault();
-        sendMessage();
-      }
-    });
-
-    async function sendMessage(userMessage = null) {
-      if (!userMessage) {
-        userMessage = input.value.trim();
-        if (!userMessage) return;
-        chat.innerHTML += `<p><strong>Tú:</strong> ${userMessage}</p>`;
-        input.value = "";
-      }
-      scrollToBottom();
-
-      // Si estamos esperando el nombre
-      if (esperandoNombre) {
-        reserva.nombre = userMessage;
-        esperandoNombre = false;
-        pedirTelefono();
-        return;
-      }
-      // Si estamos esperando el teléfono
-      if (esperandoTelefono) {
-        // Validar teléfono: mínimo 9 dígitos, solo números, espacios, guiones o +
-        if (!/^([+]?\d[\d\s-]{8,})$/.test(userMessage)) {
-          chat.innerHTML += `<p><strong>El teléfono no es válido. Introdúcelo de nuevo:</strong></p>`;
-          esperandoTelefono = true;
-          scrollToBottom();
-          return;
-        }
-        reserva.telefono = userMessage;
-        esperandoTelefono = false;
-        reservarCita();
-        return;
-      }
-      // Si estamos esperando el email
-      if (esperandoEmail) {
-        esperandoEmail = false;
-        if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(userMessage)) {
-          chat.innerHTML += `<p><strong>El email no es válido. Inténtalo de nuevo:</strong></p>`;
-          esperandoEmail = true;
-          scrollToBottom();
-          return;
-        }
-        chat.innerHTML += `<p><em>Enviando recordatorio...</em></p>`;
-        scrollToBottom();
-        const res = await fetch('/enviar_recordatorio', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            email: userMessage,
-            fecha: ultimaCita ? ultimaCita.dia : '',
-            hora: ultimaCita ? ultimaCita.hora : '',
-            servicio: ultimaCita ? ultimaCita.servicio : ''
-          })
-        });
-        const data = await res.json();
-        if (data.ok) {
-          chat.innerHTML += `<p><strong>✅ Recordatorio enviado a ${userMessage}</strong></p>`;
-        } else {
-          chat.innerHTML += `<p><strong>❌ Error al enviar el recordatorio:</strong> ${data.msg}</p>`;
-        }
-        scrollToBottom();
-        return;
-      }
-    }
+    // Eliminar input y solo permitir interacción por botones
+    // El resto del flujo ya está basado en botones, así que no se necesita más input manual
 
     function scrollToBottom() {
       chat.scrollTop = chat.scrollHeight;
