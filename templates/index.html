@@ -553,9 +553,7 @@
       </div>`;
       html += `<table style='width:100%;border-collapse:collapse;text-align:center;margin-bottom:10px;'>`;
       html += `<tr><th>Lun</th><th>Mar</th><th>Mié</th><th>Jue</th><th>Vie</th><th>Sáb</th><th>Dom</th></tr>`;
-      let fecha = new Date(fechaActual);
-      fecha.setDate(1);
-      let primerDiaSemana = fecha.getDay(); // 0=domingo, 1=lunes, ..., 6=sábado
+      let primerDiaSemana = fechaActual.getDay(); // 0=domingo, 1=lunes, ..., 6=sábado
       let offset = (primerDiaSemana + 6) % 7;
       let diasEnMes = new Date(fechaActual.getFullYear(), fechaActual.getMonth() + 1, 0).getDate();
       let dia = 1;

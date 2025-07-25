@@ -232,20 +232,18 @@ def proximos_dias_disponibles():
     ]
     dias = []
     hoy = datetime.date.today()
-    contador = 0
-    i = 0
-    while contador < 20:
-        dia = hoy + datetime.timedelta(days=i)
-        if dia.weekday() < 5:  # 0=lunes, 4=viernes
-            dia_str = dia.strftime('%Y-%m-%d')
-            ocupadas = horas_ocupadas(dia_str)
-            libres = [h for h in HORAS if h not in ocupadas]
-            dias.append({
-                'fecha': dia_str,
-                'disponibles': len(libres)
-            })
-            contador += 1
-        i += 1
+    hasta = hoy + datetime.timedelta(days=31)
+    dia = hoy
+    while dia <= hasta:
+        dia_str = dia.strftime('%Y-%m-%d')
+        ocupadas = horas_ocupadas(dia_str)
+        libres = [h for h in HORAS if h not in ocupadas]
+        dias.append({
+            'fecha': dia_str,
+            'disponibles': len(libres),
+            'weekday': dia.weekday()  # 0=lunes, 6=domingo
+        })
+        dia += datetime.timedelta(days=1)
     return jsonify({'dias': dias})
 
 @app.route('/enviar_recordatorio', methods=['POST'])
