@@ -297,5 +297,19 @@ def actualizar_telefono():
     conn.close()
     return jsonify({'ok': True})
 
+@app.route('/citas_por_telefono', methods=['POST'])
+def citas_por_telefono():
+    data = request.get_json()
+    telefono = data.get('telefono')
+    conn = sqlite3.connect(DB_PATH)
+    c = conn.cursor()
+    c.execute('SELECT servicio, dia, hora, nombre FROM citas WHERE telefono = ?', (telefono,))
+    rows = c.fetchall()
+    conn.close()
+    citas = [
+        {'servicio': row[0], 'dia': row[1], 'hora': row[2], 'nombre': row[3]} for row in rows
+    ]
+    return jsonify({'citas': citas})
+
 if __name__ == "__main__":
     app.run(debug=True)
