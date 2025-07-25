@@ -626,15 +626,21 @@
     }
 
     window.elegirDia = async function(dia) {
+      if (!reserva.servicio) {
+        chat.innerHTML = `<p style='color:#b71c1c; font-weight:bold;'>Debes seleccionar un servicio antes de reservar.</p>`;
+        setTimeout(mostrarServicios, 1500);
+        return;
+      }
       pushState('horas');
       reserva.dia = dia;
       const btns = document.getElementById('calendario-dias');
       if (btns) btns.remove();
+      chat.innerHTML += `<p><strong>Servicio:</strong> <span style='color:#1565c0;'>${reserva.servicio}</span></p>`;
       chat.innerHTML += `<p><strong>Día elegido:</strong> ${formatearFecha(dia)}</p>`;
       chat.innerHTML += `<p><strong>Selecciona una hora disponible:</strong></p>`;
       chat.innerHTML += `<div id='horas-btns'><em>Cargando horas...</em></div>`;
       // Botón Volver al calendario
-      chat.innerHTML += `<div style='display:flex; justify-content:center; margin-top:10px;'><button id='btn-volver-dia' style='background:linear-gradient(90deg,#f8bbd0,#ce93d8); color:#fff; border:none; border-radius:24px; font-size:16px; font-weight:bold; padding:10px 28px; box-shadow:0 2px 8px #f8bbd0; cursor:pointer; transition:background 0.2s;'>Volver</button></div>`;
+      chat.innerHTML += `<div style='display:flex; justify-content:center; margin-top:10px;'><button id='btn-volver-dia' style='background:linear-gradient(90deg,#e3e3e3,#90caf9); color:#2196f3; border:none; border-radius:24px; font-size:16px; font-weight:bold; padding:10px 28px; box-shadow:0 2px 8px #90caf933; cursor:pointer; transition:background 0.2s;'>Volver</button></div>`;
       document.getElementById('btn-volver-dia').onclick = async function() {
         chat.innerHTML = `<p><strong>Selecciona un día:</strong></p><div id='calendario-dias'><em>Cargando calendario...</em></div>`;
         const res = await fetch('/proximos_dias_disponibles');
@@ -664,18 +670,112 @@
     }
 
     window.elegirHora = function(hora) {
+      if (!reserva.servicio) {
+        chat.innerHTML = `<p style='color:#b71c1c; font-weight:bold;'>Debes seleccionar un servicio antes de reservar.</p>`;
+        setTimeout(mostrarServicios, 1500);
+        return;
+      }
       pushState('nombre');
       reserva.hora = hora;
       const btns = document.getElementById('horas-btns');
       if (btns) btns.remove();
-      chat.innerHTML += `<p><strong>Hora elegida:</strong> ${hora}</p>`;
-      // Pedir nombre si no lo tenemos
-      if (!reserva.nombre) {
-        chat.innerHTML += `<p><strong>¿Cuál es tu nombre?</strong></p>`;
-        esperandoNombre = true;
-      } else {
-        pedirTelefono();
+      // Elimino el texto de selección de hora si existe
+      const textos = chat.querySelectorAll('p');
+      textos.forEach(p => {
+        if (p.textContent && p.textContent.toLowerCase().includes('selecciona una hora disponible')) {
+          p.remove();
+        }
+      });
+      // Elimino cualquier botón 'Volver' que haya quedado arriba
+      const volverAntiguos = chat.querySelectorAll('#btn-volver-dia');
+      volverAntiguos.forEach(b => b.parentElement.remove());
+      // Construir todo el bloque HTML de la pantalla de datos
+      let html = '';
+      html += `<p><strong>Servicio:</strong> <span style='color:#1565c0;'>${reserva.servicio}</span></p>`;
+      html += `<p><strong>Hora elegida:</strong> ${hora}</p>`;
+      html += `<p><strong>Introduce tu nombre y teléfono:</strong></p>`;
+      html += `<div style='display:flex; flex-direction:column; align-items:center; gap:12px; margin-top:18px; margin-bottom:18px;'>
+        <input id='input-nombre' type='text' placeholder='Nombre...' style='font-size:16px; padding:8px 14px; border-radius:8px; border:1.5px solid #90caf9; outline:none; width:90%; max-width:220px;'/>
+        <input id='input-telefono' type='tel' placeholder='Teléfono...' style='font-size:16px; padding:8px 14px; border-radius:8px; border:1.5px solid #90caf9; outline:none; width:90%; max-width:220px;'/>
+        <button id='btn-check-nombre-tel' disabled style='background:linear-gradient(90deg,#90caf9,#2196f3); color:#fff; border:none; border-radius:50%; width:38px; height:38px; font-size:22px; font-weight:bold; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px #90caf955; cursor:pointer; transition:background 0.2s, opacity 0.2s; opacity:0.7;'><span>✔️</span></button>
+      </div>`;
+      html += `<div style='display:flex; justify-content:center; margin-top:30px;'><button id='btn-volver-dia' style='background:linear-gradient(90deg,#e3e3e3,#90caf9); color:#2196f3; border:none; border-radius:24px; font-size:16px; font-weight:bold; padding:10px 28px; box-shadow:0 2px 8px #90caf933; cursor:pointer; transition:background 0.2s;'>Volver</button></div>`;
+      chat.innerHTML = html;
+      setTimeout(()=>{
+        document.getElementById('input-nombre').focus();
+      }, 100);
+      esperandoNombre = true;
+      esperandoTelefono = true;
+      // Habilitar el botón check solo si ambos campos tienen texto
+      const inputNombre = document.getElementById('input-nombre');
+      const inputTelefono = document.getElementById('input-telefono');
+      const btnCheck = document.getElementById('btn-check-nombre-tel');
+      function validarInputs() {
+        if (inputNombre.value.trim().length > 0 && inputTelefono.value.trim().length > 0) {
+          btnCheck.disabled = false;
+          btnCheck.style.opacity = '1';
+        } else {
+          btnCheck.disabled = true;
+          btnCheck.style.opacity = '0.7';
+        }
       }
+      inputNombre.addEventListener('input', validarInputs);
+      inputTelefono.addEventListener('input', validarInputs);
+      inputNombre.addEventListener('change', validarInputs);
+      inputTelefono.addEventListener('change', validarInputs);
+      inputNombre.addEventListener('keyup', validarInputs);
+      inputTelefono.addEventListener('keyup', validarInputs);
+      validarInputs();
+      // Permitir Enter para enviar
+      inputNombre.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !btnCheck.disabled) btnCheck.click();
+      });
+      inputTelefono.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !btnCheck.disabled) btnCheck.click();
+      });
+      btnCheck.onclick = async function() {
+        if (!reserva.servicio) {
+          chat.innerHTML = `<p style='color:#b71c1c; font-weight:bold;'>Debes seleccionar un servicio antes de reservar.</p>`;
+          setTimeout(mostrarServicios, 1500);
+          return;
+        }
+        reserva.nombre = inputNombre.value.trim();
+        reserva.telefono = inputTelefono.value.trim();
+        esperandoNombre = false;
+        esperandoTelefono = false;
+        // Mostrar resumen y pedir confirmación
+        let resumen = '';
+        resumen += `<div style='background:rgba(255,255,255,0.95); border-radius:14px; box-shadow:0 2px 8px #90caf933; padding:18px 18px 10px 18px; margin-bottom:18px;'>`;
+        resumen += `<div style='font-size:18px; color:#263238; font-weight:bold; margin-bottom:10px;'>Confirma tu reserva</div>`;
+        resumen += `<div style='margin-bottom:6px;'><strong>Servicio:</strong> <span style='color:#1565c0;'>${reserva.servicio}</span></div>`;
+        resumen += `<div style='margin-bottom:6px;'><strong>Día:</strong> ${formatearFecha(reserva.dia)}</div>`;
+        resumen += `<div style='margin-bottom:6px;'><strong>Hora:</strong> ${reserva.hora}</div>`;
+        resumen += `<div style='margin-bottom:6px;'><strong>Nombre:</strong> ${reserva.nombre}</div>`;
+        resumen += `<div style='margin-bottom:6px;'><strong>Teléfono:</strong> ${reserva.telefono}</div>`;
+        resumen += `</div>`;
+        resumen += `<div style='display:flex; justify-content:center; gap:18px; margin-bottom:10px;'>`;
+        resumen += `<button id='btn-confirmar-reserva' style='background:linear-gradient(90deg,#90caf9,#2196f3); color:#fff; border:none; border-radius:24px; font-size:17px; font-weight:bold; padding:10px 32px; box-shadow:0 2px 8px #90caf955; cursor:pointer; transition:background 0.2s;'>Confirmar reserva</button>`;
+        resumen += `<button id='btn-cancelar-reserva' style='background:linear-gradient(90deg,#e3e3e3,#90caf9); color:#2196f3; border:none; border-radius:24px; font-size:17px; font-weight:bold; padding:10px 32px; box-shadow:0 2px 8px #90caf933; cursor:pointer; transition:background 0.2s;'>Cancelar</button>`;
+        resumen += `</div>`;
+        chat.innerHTML = resumen;
+        document.getElementById('btn-confirmar-reserva').onclick = async function() {
+          this.disabled = true;
+          this.innerHTML = '<span style="font-size:18px;">⏳</span>';
+          await reservarCita();
+        };
+        document.getElementById('btn-cancelar-reserva').onclick = function() {
+          window.elegirHora(reserva.hora);
+        };
+        scrollToBottom();
+      };
+      // Botón Volver abajo del todo
+      document.getElementById('btn-volver-dia').onclick = async function() {
+        chat.innerHTML = `<p><strong>Selecciona un día:</strong></p><div id='calendario-dias'><em>Cargando calendario...</em></div>`;
+        const res = await fetch('/proximos_dias_disponibles');
+        const data = await res.json();
+        renderCalendarioDias(data.dias);
+        scrollToBottom();
+      };
       scrollToBottom();
     }
 
@@ -724,9 +824,47 @@
       if (btns) btns.remove();
       if (resp === 'si') {
         chat.innerHTML += `<p>Por favor, introduce tu email:</p>`;
+        chat.innerHTML += `<div style='display:flex; justify-content:center; align-items:center; gap:10px; margin-top:18px; margin-bottom:18px;'>
+          <input id='input-email' type='email' placeholder='tucorreo@email.com' style='font-size:16px; padding:8px 14px; border-radius:8px; border:1.5px solid #90caf9; outline:none; width:80%; max-width:220px;'/>
+          <button id='btn-check-email' disabled style='background:linear-gradient(90deg,#90caf9,#2196f3); color:#fff; border:none; border-radius:50%; width:38px; height:38px; font-size:22px; font-weight:bold; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px #90caf955; cursor:pointer; transition:background 0.2s, opacity 0.2s; opacity:0.7;'><span>✔️</span></button>
+        </div>`;
+        setTimeout(()=>{
+          document.getElementById('input-email').focus();
+        }, 100);
         esperandoEmail = true;
+        const inputEmail = document.getElementById('input-email');
+        const btnCheckEmail = document.getElementById('btn-check-email');
+        function validarEmail() {
+          const val = inputEmail.value.trim();
+          // Validación básica de email
+          btnCheckEmail.disabled = !/^\S+@\S+\.\S+$/.test(val);
+          btnCheckEmail.style.opacity = btnCheckEmail.disabled ? '0.7' : '1';
+        }
+        inputEmail.addEventListener('input', validarEmail);
+        btnCheckEmail.onclick = async function() {
+          btnCheckEmail.disabled = true;
+          btnCheckEmail.innerHTML = '<span style="font-size:18px;">⏳</span>';
+          const res = await fetch('/enviar_recordatorio', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              email: inputEmail.value.trim(),
+              fecha: ultimaCita.dia,
+              hora: ultimaCita.hora,
+              servicio: ultimaCita.servicio
+            })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            chat.innerHTML += `<p>✅ ¡Recordatorio enviado correctamente!</p>`;
+          } else {
+            chat.innerHTML += `<p>❌ Error al enviar el recordatorio: ${data.msg || 'Inténtalo de nuevo.'}</p>`;
+          }
+          esperandoEmail = false;
+          scrollToBottom();
+        };
       } else {
-        pedirTelefono();
+        chat.innerHTML += `<p>¡Gracias! Tu cita ha sido registrada.</p>`;
       }
       scrollToBottom();
     }
