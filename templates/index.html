@@ -322,8 +322,8 @@
       const opciones = [
         { texto: 'Consultar horarios', accion: 'consultarHorarios', icono: '🕒' },
         { texto: 'Ver ubicación', accion: 'verUbicacion', icono: '📍' },
-        { texto: 'Carta de servicios', accion: 'cartaServicios', icono: '💇‍♀️' },
-        { texto: 'Solicitar cita', accion: 'solicitarCita', icono: '📅' }
+        { texto: 'Galería de trabajos', accion: 'galeriaTrabajos', icono: '🖼️' },
+        { texto: 'Servicios y citas', accion: 'solicitarCita', icono: '📅' }
       ];
       chat.innerHTML += `<div id='opciones-principales-btns' style='display:flex; flex-wrap:wrap; justify-content:center; gap:18px;'>
         ${opciones.map(o => `
@@ -342,9 +342,15 @@
         html += `<div style='display:flex; gap:10px; justify-content:center; align-items:center; margin-bottom:10px;'>`;
         html += `<input id='input-tel-citas' type='tel' placeholder='Tu teléfono...' style='font-size:16px; padding:8px 14px; border-radius:8px; border:1.5px solid #90caf9; outline:none; width:180px;'/>`;
         html += `<button id='btn-buscar-citas' style='background:linear-gradient(90deg,#2196f3,#90caf9); color:#fff; border:none; border-radius:16px; font-size:16px; font-weight:bold; padding:8px 18px; box-shadow:0 2px 8px #90caf955; cursor:pointer; transition:background 0.2s;'>Buscar</button>`;
-        html += `</div></div>`;
+        html += `</div>`;
+        // Botón volver al menú principal SIEMPRE visible
+        html += `<div style='display:flex; justify-content:center; margin-top:18px;'><button id='btn-volver-citas-menu' style='background:linear-gradient(90deg,#e3e3e3,#90caf9); color:#2196f3; border:none; border-radius:24px; font-size:16px; font-weight:bold; padding:10px 28px; box-shadow:0 2px 8px #90caf933; cursor:pointer; transition:background 0.2s;'>Volver</button></div>`;
+        html += `</div>`;
         chat.innerHTML = html;
         document.getElementById('input-tel-citas').focus();
+        document.getElementById('btn-volver-citas-menu').onclick = function() {
+          mostrarOpcionesPrincipales(true);
+        };
         document.getElementById('btn-buscar-citas').onclick = async function() {
           const tel = document.getElementById('input-tel-citas').value.trim();
           if (!tel) {
@@ -374,6 +380,7 @@
             resultado += `<div style='color:#b71c1c; font-weight:bold;'>No se encontraron citas para ese teléfono.</div>`;
           }
           resultado += `</div>`;
+          // (Eliminado el botón volver aquí)
           chat.innerHTML += resultado;
           this.disabled = false;
           this.innerHTML = 'Buscar';
@@ -441,18 +448,69 @@
           <a href="https://maps.app.goo.gl/LmkF9h2bCq9mkNGu7" target="_blank" style="margin-top:10px; color:#2196f3; font-weight:bold; text-decoration:none;">Abrir en Google Maps</a>
         </div>
         `;
-      } else if (accion === 'cartaServicios') {
-        chat.innerHTML = renderServicios('Carta de servicios', 'elegirServicio', true, true);
-        scrollToBottom();
-        document.getElementById('btn-volver-servicio-lista').onclick = function() {
-          chat.innerHTML = '';
-          mostrarOpcionesPrincipales(false);
-          scrollToBottom();
+      } else if (accion === 'galeriaTrabajos') {
+        // Galería de imágenes de peinados
+        chat.innerHTML = `<div style='font-size:20px; color:#263238; font-weight:bold; text-align:center; margin:18px 0 18px 0;'>Galería de trabajos</div>`;
+        const imagenes = [
+          'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80',
+          'https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=crop&w=400&q=80',
+          'https://images.unsplash.com/photo-1519415943484-cfbdfb6c7b51?auto=format&fit=crop&w=400&q=80',
+          'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80',
+          'https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80',
+          'https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=400&q=80',
+          'https://images.unsplash.com/photo-1503602642458-232111445657?auto=format&fit=crop&w=400&q=80'
+        ];
+        chat.innerHTML += `<div style='display:flex; flex-wrap:wrap; justify-content:center; gap:18px; margin-bottom:18px;'>` +
+          imagenes.map(img => `<div style='background:#fff; border-radius:14px; box-shadow:0 2px 8px #90caf933; padding:8px;'><img src='${img}' alt='Peinado' style='width:140px; height:140px; object-fit:cover; border-radius:10px;'/></div>`).join('') +
+          `</div>`;
+        // Botón volver estático grande al final
+        chat.innerHTML += `<div style='display:flex; justify-content:center; margin-bottom:10px;'><button id='btn-volver-galeria' style='background:linear-gradient(90deg,#e3e3e3,#90caf9); color:#2196f3; border:none; border-radius:24px; font-size:16px; font-weight:bold; padding:10px 28px; box-shadow:0 2px 8px #90caf933; cursor:pointer; transition:background 0.2s;'>Volver</button></div>`;
+        document.getElementById('btn-volver-galeria').onclick = function() {
+          mostrarOpcionesPrincipales(true);
         };
+        // Flecha animada de scroll
+        setTimeout(() => { chat.scrollTop = 0; }, 50);
+        if (!document.getElementById('scroll-arrow')) {
+          const arrow = document.createElement('div');
+          arrow.id = 'scroll-arrow';
+          arrow.innerHTML = `<svg width='38' height='38' viewBox='0 0 38 38'><circle cx='19' cy='19' r='19' fill='#90caf9' opacity='0.85'/><polyline points='12,16 19,25 26,16' fill='none' stroke='#1565c0' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/></svg>`;
+          arrow.style.position = 'absolute';
+          arrow.style.right = '18px';
+          arrow.style.bottom = '18px';
+          arrow.style.zIndex = '9999';
+          arrow.style.cursor = 'pointer';
+          arrow.style.animation = 'arrow-bounce 1.2s infinite';
+          document.getElementById('chat-widget').appendChild(arrow);
+          const style = document.createElement('style');
+          style.innerHTML = `@keyframes arrow-bounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(12px);} }`;
+          document.head.appendChild(style);
+          arrow.onclick = () => { chat.scrollTop = chat.scrollHeight; };
+        }
+        scrollToBottom();
+        // No añadir el botón grande, solo el animado (se añade por setTimeout más abajo)
       } else if (accion === 'solicitarCita') {
         // Pantalla de servicios para reservar
         chat.innerHTML = renderServicios('¿Qué servicio deseas reservar?', 'elegirServicio', true);
-        scrollToBottom();
+        // Scroll arriba al abrir
+        chat.scrollTop = 0;
+        // Flecha animada de scroll
+        if (!document.getElementById('scroll-arrow')) {
+          const arrow = document.createElement('div');
+          arrow.id = 'scroll-arrow';
+          arrow.innerHTML = `<svg width='38' height='38' viewBox='0 0 38 38'><circle cx='19' cy='19' r='19' fill='#90caf9' opacity='0.85'/><polyline points='12,16 19,25 26,16' fill='none' stroke='#1565c0' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/></svg>`;
+          arrow.style.position = 'absolute';
+          arrow.style.right = '18px';
+          arrow.style.bottom = '18px';
+          arrow.style.zIndex = '9999';
+          arrow.style.cursor = 'pointer';
+          arrow.style.animation = 'arrow-bounce 1.2s infinite';
+          document.getElementById('chat-widget').appendChild(arrow);
+          const style = document.createElement('style');
+          style.innerHTML = `@keyframes arrow-bounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(12px);} }`;
+          document.head.appendChild(style);
+          arrow.onclick = () => { chat.scrollTop = chat.scrollHeight; };
+        }
+        // NO llamar a scrollToBottom aquí
         document.getElementById('btn-volver-servicio-lista').onclick = function() {
           chat.innerHTML = '';
           mostrarOpcionesPrincipales(false);
@@ -462,50 +520,52 @@
         return;
       }
       // Tras mostrar la info, mostrar solo un botón grande de 'Volver'
-      setTimeout(() => {
-        chat.innerHTML += `
-        <div style='display:flex; justify-content:center; margin-top:16px;'>
-          <button id='btn-volver' class='btn-volver-animado'>
-            <span style='display:inline-flex; align-items:center; gap:8px;'>
-              <svg width='22' height='22' viewBox='0 0 24 24' fill='none' style='vertical-align:middle;'><path d='M15 18l-6-6 6-6' stroke='#2196f3' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/></svg>
-              Volver
-            </span>
-          </button>
-        </div>
-        <style>
-        .btn-volver-animado {
-          background: linear-gradient(90deg,#e3e3e3,#90caf9);
-          color: #2196f3;
-          border: none;
-          border-radius: 28px;
-          font-size: 18px;
-          font-weight: bold;
-          padding: 14px 38px;
-          box-shadow: 0 2px 12px rgba(33,150,243,0.10);
-          cursor: pointer;
-          outline: none;
-          opacity: 0;
-          transform: translateY(20px) scale(0.95);
-          animation: aparecerBtnVolver 0.5s 0.1s forwards;
-          transition: background 0.2s, color 0.2s, transform 0.2s;
-          display: inline-block;
-        }
-        @keyframes aparecerBtnVolver {
-          to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        .btn-volver-animado:hover {
-          background: linear-gradient(90deg,#90caf9,#e3e3e3);
-          color: #1565c0;
-          transform: scale(1.04) translateY(-2px);
-          box-shadow: 0 4px 18px rgba(33,150,243,0.18);
-        }
-        </style>
-        `;
-        document.getElementById('btn-volver').onclick = function() {
-          mostrarOpcionesPrincipales(false);
-        };
-        scrollToBottom();
-      }, 700);
+      if (accion !== 'galeriaTrabajos') {
+        setTimeout(() => {
+          chat.innerHTML += `
+          <div style='display:flex; justify-content:center; margin-top:16px;'>
+            <button id='btn-volver' class='btn-volver-animado'>
+              <span style='display:inline-flex; align-items:center; gap:8px;'>
+                <svg width='22' height='22' viewBox='0 0 24 24' fill='none' style='vertical-align:middle;'><path d='M15 18l-6-6 6-6' stroke='#2196f3' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/></svg>
+                Volver
+              </span>
+            </button>
+          </div>
+          <style>
+          .btn-volver-animado {
+            background: linear-gradient(90deg,#e3e3e3,#90caf9);
+            color: #2196f3;
+            border: none;
+            border-radius: 28px;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 14px 38px;
+            box-shadow: 0 2px 12px rgba(33,150,243,0.10);
+            cursor: pointer;
+            outline: none;
+            opacity: 0;
+            transform: translateY(20px) scale(0.95);
+            animation: aparecerBtnVolver 0.5s 0.1s forwards;
+            transition: background 0.2s, color 0.2s, transform 0.2s;
+            display: inline-block;
+          }
+          @keyframes aparecerBtnVolver {
+            to { opacity: 1; transform: translateY(0) scale(1); }
+          }
+          .btn-volver-animado:hover {
+            background: linear-gradient(90deg,#90caf9,#e3e3e3);
+            color: #1565c0;
+            transform: scale(1.04) translateY(-2px);
+            box-shadow: 0 4px 18px rgba(33,150,243,0.18);
+          }
+          </style>
+          `;
+          document.getElementById('btn-volver').onclick = function() {
+            mostrarOpcionesPrincipales(false);
+          };
+          scrollToBottom();
+        }, 700);
+      }
     }
 
     // Función reutilizable para renderizar el bloque de servicios

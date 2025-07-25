@@ -263,7 +263,7 @@ def enviar_recordatorio():
         msg = EmailMessage()
         msg["Subject"] = f"Recordatorio de tu cita en {nombre_peluqueria}"
         msg["From"] = email_user
-        msg["To"] = email
+        msg["To"] = email  # El destinatario es el email del usuario
         cuerpo = f"""
 Hola,
 
@@ -301,9 +301,10 @@ def actualizar_telefono():
 def citas_por_telefono():
     data = request.get_json()
     telefono = data.get('telefono')
+    hoy = datetime.date.today().strftime('%Y-%m-%d')
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
-    c.execute('SELECT servicio, dia, hora, nombre FROM citas WHERE telefono = ?', (telefono,))
+    c.execute('SELECT servicio, dia, hora, nombre FROM citas WHERE telefono = ? AND dia >= ?', (telefono, hoy))
     rows = c.fetchall()
     conn.close()
     citas = [
