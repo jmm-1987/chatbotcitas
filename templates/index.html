@@ -9,10 +9,9 @@
       font-family: Arial, sans-serif;
       margin: 0;
       min-height: 100vh;
-      /* Imagen de fondo elegante, neutra, tipo salón de belleza */
-      background: url('https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1200&q=80') no-repeat center center fixed;
+      /* Fondo con imagen local */
+      background: url('/static/fondo.png') no-repeat center center fixed;
       background-size: cover;
-      /* Capa de oscurecimiento sutil para legibilidad */
       position: relative;
     }
     body::before {
@@ -30,8 +29,8 @@
       right: 20px;
       width: 350px;
       height: 500px;
-      background: linear-gradient(rgba(255,255,255,0.98), rgba(255,255,255,0.98)),
-        url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80') center center/cover no-repeat;
+      background: linear-gradient(rgba(255,255,255,0.15), rgba(255,255,255,0.15)),
+        url('/static/fondo.png') center center/cover no-repeat;
       border: 2px solid #bdbdbd; /* gris claro */
       border-radius: 18px;
       display: none;
@@ -56,10 +55,12 @@
     #chat-body {
       flex-grow: 1;
       padding: 14px;
+      padding-top: 60px;
       overflow-y: auto;
       height: 100%;
       color: #263238;
       background: transparent;
+      padding-top: 20px;
     }
 
     #chat-input {
@@ -177,6 +178,9 @@
         margin: 0;
         padding: 0;
         overflow: hidden;
+        /* Fondo responsivo en móvil */
+        background: url('/static/fondo.png') no-repeat center center fixed;
+        background-size: cover;
       }
       #chat-widget {
         position: fixed;
@@ -194,8 +198,8 @@
         z-index: 9999;
         display: flex !important;
         flex-direction: column;
-        background: linear-gradient(rgba(255,255,255,0.98), rgba(255,255,255,0.98)),
-          url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=800&q=80') center center/cover no-repeat;
+        background: linear-gradient(rgba(255,255,255,0.15), rgba(255,255,255,0.15)),
+          url('/static/fondo.png') center center/cover no-repeat;
         backdrop-filter: blur(10px);
       }
       #chat-header {
@@ -222,6 +226,148 @@
         padding: 8px 10px;
       }
     }
+    .icono-reloj {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display: block;
+    }
+    
+    /* Estilos para el header */
+    .header-text {
+      font-family: 'Oswald', Arial, sans-serif;
+      color: #fff;
+      font-size: 18px;
+      font-weight: 400;
+      text-align: right;
+      margin: 20px 0;
+      padding-right: 20px;
+      width: 33.33%;
+      float: right;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+    
+    /* Estilos para el mensaje de bienvenida */
+    .welcome-message {
+      font-family: 'Arial', sans-serif;
+      color: #fff;
+      font-size: 24px;
+      font-weight: bold;
+      text-align: left;
+      margin: 40px 0 30px 0;
+      line-height: 1.3;
+      padding-left: 20px;
+      width: 66.67%;
+      float: left;
+    }
+    
+    /* Contenedor para el header y mensaje */
+    .header-container {
+      display: flex;
+      width: 100%;
+      clear: both;
+    }
+    
+    /* Estilos para los botones */
+    .opcion-animada {
+      cursor: pointer;
+      width: 140px;
+      height: 140px;
+      text-align: center;
+      background: transparent;
+      border-radius: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      padding: 0;
+      transition: transform 0.2s;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      align-items: center;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .icono-animado {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .opcion-texto {
+      font-family: 'Montserrat', Arial, sans-serif;
+      font-size: 15px;
+      color: #fff;
+      font-weight: bold;
+      line-height: 1.2;
+      text-align: center;
+      padding: 14px 8px 12px 8px;
+      width: 100%;
+      position: absolute;
+      left: 0;
+      bottom: 0;
+      border-bottom-left-radius: 16px;
+      border-bottom-right-radius: 16px;
+      z-index: 2;
+      letter-spacing: 0.5px;
+      background: none;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.55), 0 1px 0 #fff;
+    }
+    
+    .boton-imagen {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 16px;
+    }
+    
+    /* Grid de botones */
+    .botones-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      padding: 0 30px;
+      margin-top: 20px;
+      justify-items: center;
+      max-width: 320px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .header-fixed {
+      position: absolute;
+      top: 18px;
+      right: 24px;
+      font-family: 'Oswald', Arial, sans-serif;
+      color: #fff;
+      font-size: 18px;
+      font-weight: 400;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      z-index: 10;
+      pointer-events: none;
+      text-align: right;
+    }
+    #chat-widget {
+      position: relative;
+    }
+    /* Ajustes para móvil */
+    @media (max-width: 600px) {
+      #scroll-arrow {
+        right: 20px !important;
+        bottom: 40px !important;
+        width: 50px !important;
+        height: 50px !important;
+      }
+      #scroll-arrow svg {
+        width: 50px !important;
+        height: 50px !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -232,10 +378,7 @@
 
   <!-- Widget del chatbot -->
   <div id="chat-widget">
-    <div id="chat-header">Asistente Virtual <span id="chat-close" style="float:right; cursor:pointer; font-weight:normal;">&times;</span></div>
-    <div id="logo-ficticio" style="width:100%;display:flex;justify-content:center;align-items:center;background:rgba(255,255,255,0.92);padding:10px 0 2px 0;box-sizing:border-box;">
-      <img src="/static/logo.png" alt="Logo" style="max-width:240px; max-height:90px; object-fit:contain; display:block;" />
-    </div>
+    <div class="header-fixed">SCARLETT & ISABELLA</div>
     <div id="chat-body"></div>
     <!-- Eliminado el input y el botón de enviar -->
     <!-- <div id="chat-input">
@@ -249,7 +392,6 @@
     const input     = document.getElementById("input");
     const toggleBtn = document.getElementById("chat-toggle");
     const widget    = document.getElementById("chat-widget");
-    const closeBtn  = document.getElementById("chat-close");
     const callout   = document.getElementById("chat-callout");
     const API_URL   = "/chat";
 
@@ -284,11 +426,6 @@
       }
     };
 
-    closeBtn.onclick = () => {
-      widget.style.display = "none";
-      toggleBtn.style.display = "block";
-    };
-
     // --- NUEVO: Manejo de historial para botón físico de volver ---
     function pushState(pantalla) {
       history.pushState({pantalla}, '');
@@ -316,22 +453,31 @@
       if (btnVolver) btnVolver.remove();
       // Limpiar el chat
       chat.innerHTML = '';
-      if (mostrarSaludo) {
-        chat.innerHTML += `<p style='text-align:center; margin-bottom:18px;'><strong>¡Hola! 👋 Bienvenida a Peluquería JM, ¿en qué podemos ayudarte hoy?</strong></p>`;
-      }
-      const opciones = [
-        { texto: 'Consultar horarios', accion: 'consultarHorarios', icono: '🕒' },
-        { texto: 'Ver ubicación', accion: 'verUbicacion', icono: '📍' },
-        { texto: 'Galería de trabajos', accion: 'galeriaTrabajos', icono: '🖼️' },
-        { texto: 'Servicios y citas', accion: 'solicitarCita', icono: '📅' }
-      ];
-      chat.innerHTML += `<div id='opciones-principales-btns' style='display:flex; flex-wrap:wrap; justify-content:center; gap:18px;'>
-        ${opciones.map(o => `
-          <div class='opcion-animada' onclick=\"opcionPrincipal('${o.accion}')\" style='cursor:pointer; width:110px; text-align:center; background:#fff; border-radius:18px; box-shadow:0 2px 8px #f8bbd0; padding:18px 8px 10px 8px; transition:transform 0.2s;'>
-            <div style='font-size:48px; margin-bottom:8px; display:block;' class='icono-animado'>${o.icono}</div>
-            <div style='font-size:15px; color:#7b1fa2; font-weight:500;'>${o.texto}</div>
+      // Siempre mostrar la pantalla de inicio completa
+      chat.innerHTML += `<div class="header-container">
+        <div class="welcome-message">¡Hola!<br>Bienvenida a Peluquería JM, ¿en qué podemos ayudarte hoy?</div>
+      </div>`;
+      chat.innerHTML += `<div class="botones-grid">
+        <div class='opcion-animada' onclick="opcionPrincipal('consultarHorarios')">
+          <div class='icono-animado'>
+            <img src="/static/reloj.png" alt="Horarios" class="boton-imagen" />
           </div>
-        `).join('')}
+        </div>
+        <div class='opcion-animada' onclick="opcionPrincipal('verUbicacion')">
+          <div class='icono-animado'>
+            <img src="/static/ubicacion.png" alt="Ubicación" class="boton-imagen" />
+          </div>
+        </div>
+        <div class='opcion-animada' onclick="opcionPrincipal('galeriaTrabajos')">
+          <div class='icono-animado'>
+            <img src="/static/galeria.png" alt="Galería" class="boton-imagen" />
+          </div>
+        </div>
+        <div class='opcion-animada' onclick="opcionPrincipal('solicitarCita')">
+          <div class='icono-animado'>
+            <img src="/static/citas.png" alt="Citas" class="boton-imagen" />
+          </div>
+        </div>
       </div>`;
       // Botón Ver mis citas
       chat.innerHTML += `<div style='display:flex; justify-content:center; margin:22px 0 0 0;'><button id='btn-ver-mis-citas-menu' style='width:calc(100% - 36px); max-width:420px; background:linear-gradient(90deg,#2196f3,#90caf9); color:#fff; border:none; border-radius:24px; font-size:17px; font-weight:bold; padding:14px 0; box-shadow:0 2px 8px #90caf955; cursor:pointer; transition:background 0.2s;'>Ver mis citas</button></div>`;
@@ -414,8 +560,8 @@
       chat.innerHTML = '';
       if (accion === 'consultarHorarios') {
         chat.innerHTML += `
-        <div style='display:flex; flex-direction:column; align-items:center; margin-bottom:18px;'>
-          <div style='width:90px; height:90px; margin-bottom:10px;'>
+        <div style='display:flex; flex-direction:column; align-items:center; justify-content:center; margin-bottom:18px; min-height:60vh;'>
+          <div style='width:90px; height:90px; margin-bottom:10px; margin-top:80px;'>
             <svg id='svg-reloj' viewBox='0 0 100 100' width='90' height='90'>
               <circle cx='50' cy='50' r='45' fill='#fff' stroke='#90caf9' stroke-width='6'/>
               <circle cx='50' cy='50' r='40' fill='none' stroke='#bdbdbd' stroke-width='2' stroke-dasharray='4 6'/>
@@ -424,8 +570,8 @@
               <circle cx='50' cy='50' r='4' fill='#90caf9'/>
             </svg>
           </div>
-          <div style='font-size:20px; color:#263238; font-weight:bold; margin:18px 0 6px 0;'>¡Consulta nuestros horarios!</div>
-          <div style='font-size:16px; color:#263238; text-align:center;'>Lunes a viernes: <b>09:00 a 18:00</b><br>Sábados: <b>10:00 a 13:00</b></div>
+          <div style='font-size:20px; color:#fff; font-weight:bold; margin:18px 0 6px 0;'>¡Consulta nuestros horarios!</div>
+          <div style='font-size:16px; color:#fff; text-align:center;'>Lunes a viernes: <b>09:00 a 18:00</b><br>Sábados: <b>10:00 a 13:00</b></div>
         </div>
         <style>
         @keyframes girarHora { 0%{transform:rotate(0deg);} 100%{transform:rotate(360deg);} }
@@ -436,8 +582,8 @@
         `;
       } else if (accion === 'verUbicacion') {
         chat.innerHTML += `
-        <div style='display:flex; flex-direction:column; align-items:center; margin:24px 0;'>
-          <div style='font-size:20px; color:#263238; font-weight:bold; margin-bottom:12px;'>Nuestra ubicación</div>
+        <div style='display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; margin-top:-60px;'>
+          <div style='font-size:20px; color:#fff; font-weight:bold; margin-bottom:12px;'>Nuestra ubicación</div>
           <iframe
             src="https://www.google.com/maps?q=43.3623,-8.4115&z=16&output=embed"
             width="100%" height="260" style="border:0; border-radius:16px; box-shadow:0 2px 12px #90caf933; max-width:380px;"
@@ -445,26 +591,27 @@
             loading="lazy"
             referrerpolicy="no-referrer-when-downgrade">
           </iframe>
-          <a href="https://maps.app.goo.gl/LmkF9h2bCq9mkNGu7" target="_blank" style="margin-top:10px; color:#2196f3; font-weight:bold; text-decoration:none;">Abrir en Google Maps</a>
+          <a href="https://maps.app.goo.gl/LmkF9h2bCq9mkNGu7" target="_blank" style="margin-top:10px; color:#fff; font-weight:bold; text-decoration:none;">Abrir en Google Maps</a>
         </div>
         `;
       } else if (accion === 'galeriaTrabajos') {
         // Galería de imágenes de peinados
-        chat.innerHTML = `<div style='font-size:20px; color:#263238; font-weight:bold; text-align:center; margin:18px 0 18px 0;'>Galería de trabajos</div>`;
+        chat.innerHTML = `<div style='display:flex; flex-direction:column; align-items:center; margin-top:40px;'>
+          <div style='font-size:20px; color:#fff; font-weight:bold; text-align:center; margin-bottom:20px;'>Galería de trabajos</div>`;
         const imagenes = [
-          'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80',
-          'https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=crop&w=400&q=80',
-          'https://images.unsplash.com/photo-1519415943484-cfbdfb6c7b51?auto=format&fit=crop&w=400&q=80',
-          'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&q=80',
-          'https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80',
-          'https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=400&q=80',
-          'https://images.unsplash.com/photo-1503602642458-232111445657?auto=format&fit=crop&w=400&q=80'
+          'https://images.pexels.com/photos/3993449/pexels-photo-3993449.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop',
+          'https://images.pexels.com/photos/3993450/pexels-photo-3993450.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop',
+          'https://images.pexels.com/photos/3993451/pexels-photo-3993451.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop',
+          'https://images.pexels.com/photos/3993452/pexels-photo-3993452.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop',
+          'https://images.pexels.com/photos/3993453/pexels-photo-3993453.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop',
+          'https://images.pexels.com/photos/3993454/pexels-photo-3993454.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop',
+          'https://images.pexels.com/photos/3993455/pexels-photo-3993455.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop'
         ];
         chat.innerHTML += `<div style='display:flex; flex-wrap:wrap; justify-content:center; gap:18px; margin-bottom:18px;'>` +
           imagenes.map(img => `<div style='background:#fff; border-radius:14px; box-shadow:0 2px 8px #90caf933; padding:8px;'><img src='${img}' alt='Peinado' style='width:140px; height:140px; object-fit:cover; border-radius:10px;'/></div>`).join('') +
           `</div>`;
         // Botón volver estático grande al final
-        chat.innerHTML += `<div style='display:flex; justify-content:center; margin-bottom:10px;'><button id='btn-volver-galeria' style='background:linear-gradient(90deg,#e3e3e3,#90caf9); color:#2196f3; border:none; border-radius:24px; font-size:16px; font-weight:bold; padding:10px 28px; box-shadow:0 2px 8px #90caf933; cursor:pointer; transition:background 0.2s;'>Volver</button></div>`;
+        chat.innerHTML += `<div style='display:flex; justify-content:center; margin-top:20px;'><button id='btn-volver-galeria' style='background:linear-gradient(90deg,#e3e3e3,#90caf9); color:#2196f3; border:none; border-radius:24px; font-size:16px; font-weight:bold; padding:10px 28px; box-shadow:0 2px 8px #90caf933; cursor:pointer; transition:background 0.2s;'>Volver</button></div>`;
         document.getElementById('btn-volver-galeria').onclick = function() {
           mostrarOpcionesPrincipales(true);
         };
@@ -475,22 +622,30 @@
           arrow.id = 'scroll-arrow';
           arrow.innerHTML = `<svg width='38' height='38' viewBox='0 0 38 38'><circle cx='19' cy='19' r='19' fill='#90caf9' opacity='0.85'/><polyline points='12,16 19,25 26,16' fill='none' stroke='#1565c0' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/></svg>`;
           arrow.style.position = 'absolute';
-          arrow.style.right = '18px';
-          arrow.style.bottom = '18px';
+          arrow.style.right = '20px';
+          arrow.style.bottom = '30px';
           arrow.style.zIndex = '9999';
           arrow.style.cursor = 'pointer';
           arrow.style.animation = 'arrow-bounce 1.2s infinite';
+          arrow.style.display = 'none';
           document.getElementById('chat-widget').appendChild(arrow);
           const style = document.createElement('style');
           style.innerHTML = `@keyframes arrow-bounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(12px);} }`;
           document.head.appendChild(style);
           arrow.onclick = () => { chat.scrollTop = chat.scrollHeight; };
+          
+          // Mostrar flecha solo si hay scroll
+          setTimeout(() => {
+            if (chat.scrollHeight > chat.clientHeight) {
+              arrow.style.display = 'block';
+            }
+          }, 500);
         }
         scrollToBottom();
         // No añadir el botón grande, solo el animado (se añade por setTimeout más abajo)
       } else if (accion === 'solicitarCita') {
         // Pantalla de servicios para reservar
-        chat.innerHTML = renderServicios('¿Qué servicio deseas reservar?', 'elegirServicio', true);
+        chat.innerHTML = `<div style='margin-top:60px;'>` + renderServicios('¿Qué servicio deseas reservar?', 'elegirServicio', true) + `</div>`;
         // Scroll arriba al abrir
         chat.scrollTop = 0;
         // Flecha animada de scroll
@@ -499,16 +654,24 @@
           arrow.id = 'scroll-arrow';
           arrow.innerHTML = `<svg width='38' height='38' viewBox='0 0 38 38'><circle cx='19' cy='19' r='19' fill='#90caf9' opacity='0.85'/><polyline points='12,16 19,25 26,16' fill='none' stroke='#1565c0' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/></svg>`;
           arrow.style.position = 'absolute';
-          arrow.style.right = '18px';
-          arrow.style.bottom = '18px';
+          arrow.style.right = '20px';
+          arrow.style.bottom = '30px';
           arrow.style.zIndex = '9999';
           arrow.style.cursor = 'pointer';
           arrow.style.animation = 'arrow-bounce 1.2s infinite';
+          arrow.style.display = 'none';
           document.getElementById('chat-widget').appendChild(arrow);
           const style = document.createElement('style');
           style.innerHTML = `@keyframes arrow-bounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(12px);} }`;
           document.head.appendChild(style);
           arrow.onclick = () => { chat.scrollTop = chat.scrollHeight; };
+          
+          // Mostrar flecha solo si hay scroll
+          setTimeout(() => {
+            if (chat.scrollHeight > chat.clientHeight) {
+              arrow.style.display = 'block';
+            }
+          }, 500);
         }
         // NO llamar a scrollToBottom aquí
         document.getElementById('btn-volver-servicio-lista').onclick = function() {
@@ -571,15 +734,15 @@
     // Función reutilizable para renderizar el bloque de servicios
     function renderServicios(titulo, onClickServicio, mostrarVolver = true, reservarActivo = true) {
       const servicios = [
-        {nombre: 'Corte de mujer', precio: '18€', img: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=120&q=80', desc: 'Corte personalizado, asesoría de estilo y acabado profesional.'},
-        {nombre: 'Corte de hombre', precio: '12€', img: 'https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=crop&w=120&q=80', desc: 'Corte clásico o moderno, incluye lavado y peinado.'},
-        {nombre: 'Peinado', precio: '15€', img: 'https://images.unsplash.com/photo-1519415943484-cfbdfb6c7b51?auto=format&fit=crop&w=120&q=80', desc: 'Peinados para eventos, fiestas o el día a día.'},
-        {nombre: 'Tinte raíz', precio: '22€', img: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80', desc: 'Coloración de raíces con productos de alta calidad.'},
-        {nombre: 'Mechas', precio: '35€', img: 'https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=120&q=80', desc: 'Mechas naturales o fantasía, técnica a elegir.'},
-        {nombre: 'Lavado y secado', precio: '8€', img: 'https://images.unsplash.com/photo-1515378791036-0648a3ef77b2?auto=format&fit=crop&w=120&q=80', desc: 'Lavado relajante y secado con brushing.'},
-        {nombre: 'Tratamiento hidratante', precio: '20€', img: 'https://images.unsplash.com/photo-1503602642458-232111445657?auto=format&fit=crop&w=120&q=80', desc: 'Recupera el brillo y la suavidad de tu cabello.'}
+        {nombre: 'Corte de mujer', precio: '18€', img: 'https://images.pexels.com/photos/3993449/pexels-photo-3993449.jpeg?auto=compress&cs=tinysrgb&w=120&h=120&fit=crop', desc: 'Corte personalizado, asesoría de estilo y acabado profesional.'},
+        {nombre: 'Corte de hombre', precio: '12€', img: 'https://images.pexels.com/photos/3993450/pexels-photo-3993450.jpeg?auto=compress&cs=tinysrgb&w=120&h=120&fit=crop', desc: 'Corte clásico o moderno, incluye lavado y peinado.'},
+        {nombre: 'Peinado', precio: '15€', img: 'https://images.pexels.com/photos/3993451/pexels-photo-3993451.jpeg?auto=compress&cs=tinysrgb&w=120&h=120&fit=crop', desc: 'Peinados para eventos, fiestas o el día a día.'},
+        {nombre: 'Tinte raíz', precio: '22€', img: 'https://images.pexels.com/photos/3993452/pexels-photo-3993452.jpeg?auto=compress&cs=tinysrgb&w=120&h=120&fit=crop', desc: 'Coloración de raíces con productos de alta calidad.'},
+        {nombre: 'Mechas', precio: '35€', img: 'https://images.pexels.com/photos/3993453/pexels-photo-3993453.jpeg?auto=compress&cs=tinysrgb&w=120&h=120&fit=crop', desc: 'Mechas naturales o fantasía, técnica a elegir.'},
+        {nombre: 'Lavado y secado', precio: '8€', img: 'https://images.pexels.com/photos/3993454/pexels-photo-3993454.jpeg?auto=compress&cs=tinysrgb&w=120&h=120&fit=crop', desc: 'Lavado relajante y secado con brushing.'},
+        {nombre: 'Tratamiento hidratante', precio: '20€', img: 'https://images.pexels.com/photos/3993455/pexels-photo-3993455.jpeg?auto=compress&cs=tinysrgb&w=120&h=120&fit=crop', desc: 'Recupera el brillo y la suavidad de tu cabello.'}
       ];
-      let html = `<div style='font-size:20px; color:#263238; font-weight:bold; text-align:center; margin:18px 0 18px 0;'>${titulo}</div>`;
+      let html = `<div style='font-size:20px; color:#fff; font-weight:bold; text-align:center; margin:18px 0 18px 0;'>${titulo}</div>`;
       html += `<div id='servicios-lista' style='display:flex; flex-wrap:wrap; justify-content:center; gap:22px; margin-bottom:18px;'>`;
       html += servicios.map((s,i) => `
         <div class='servicio-card anim-serv' style='background:rgba(255,255,255,0.92); border-radius:18px; box-shadow:0 2px 12px #90caf933; width:270px; padding:18px 18px 16px 18px; display:flex; flex-direction:column; align-items:center; transition:transform 0.2s;'>
@@ -638,6 +801,8 @@
 
     function renderCalendarioDias(diasDisponibles, mesOffset = 0) {
       pushState('calendario');
+      // Añadir margen superior para evitar superposición con header
+      const headerMargin = '<div style="margin-top:60px;"></div>';
       // Crear un mapa fecha->disponibles
       const diasMap = {};
       diasDisponibles.forEach(d => diasMap[d.fecha] = d.disponibles);
@@ -654,9 +819,9 @@
         primerLunes.setDate(primerLunes.getDate() - 1);
       }
       // Cabecera con mes y flechas
-      let html = `<div style='display:flex; align-items:center; justify-content:center; gap:18px; margin-bottom:8px;'>
+      let html = headerMargin + `<div style='display:flex; align-items:center; justify-content:center; gap:18px; margin-bottom:8px;'>
         <button id='mes-anterior' style='background:none; border:none; color:#2196f3; font-size:22px; cursor:pointer; padding:0 8px;' ${mesOffset<=0?'disabled style="opacity:0.3;cursor:not-allowed;"':''}>&lt;</button>
-        <span style='font-size:18px; font-weight:bold; color:#263238; text-transform:capitalize;'>${mes} ${anio}</span>
+        <span style='font-size:18px; font-weight:bold; color:#fff; text-transform:capitalize;'>${mes} ${anio}</span>
         <button id='mes-siguiente' style='background:none; border:none; color:#2196f3; font-size:22px; cursor:pointer; padding:0 8px;'>&gt;</button>
       </div>`;
       html += `<table style='width:100%;border-collapse:collapse;text-align:center;margin-bottom:10px;'>`;
@@ -743,12 +908,13 @@
       reserva.dia = dia;
       const btns = document.getElementById('calendario-dias');
       if (btns) btns.remove();
-      chat.innerHTML += `<p><strong>Servicio:</strong> <span style='color:#1565c0;'>${reserva.servicio}</span></p>`;
-      chat.innerHTML += `<p><strong>Día elegido:</strong> ${formatearFecha(dia)}</p>`;
-      chat.innerHTML += `<p><strong>Selecciona una hora disponible:</strong></p>`;
+      chat.innerHTML += `<div style='margin-top:60px;'><p style='color:#fff;'><strong>Servicio:</strong> <span style='color:#90caf9;'>${reserva.servicio}</span></p>`;
+      chat.innerHTML += `<p style='color:#fff;'><strong>Día elegido:</strong> ${formatearFecha(dia)}</p>`;
+      chat.innerHTML += `<p style='color:#fff;'><strong>Selecciona una hora disponible:</strong></p>`;
       chat.innerHTML += `<div id='horas-btns'><em>Cargando horas...</em></div>`;
       // Botón Volver al calendario
       chat.innerHTML += `<div style='display:flex; justify-content:center; margin-top:10px;'><button id='btn-volver-dia' style='background:linear-gradient(90deg,#e3e3e3,#90caf9); color:#2196f3; border:none; border-radius:24px; font-size:16px; font-weight:bold; padding:10px 28px; box-shadow:0 2px 8px #90caf933; cursor:pointer; transition:background 0.2s;'>Volver</button></div>`;
+      chat.innerHTML += `</div>`;
       document.getElementById('btn-volver-dia').onclick = async function() {
         chat.innerHTML = `<p><strong>Selecciona un día:</strong></p><div id='calendario-dias'><em>Cargando calendario...</em></div>`;
         const res = await fetch('/proximos_dias_disponibles');
@@ -798,16 +964,17 @@
       const volverAntiguos = chat.querySelectorAll('#btn-volver-dia');
       volverAntiguos.forEach(b => b.parentElement.remove());
       // Construir todo el bloque HTML de la pantalla de datos
-      let html = '';
-      html += `<p><strong>Servicio:</strong> <span style='color:#1565c0;'>${reserva.servicio}</span></p>`;
-      html += `<p><strong>Hora elegida:</strong> ${hora}</p>`;
-      html += `<p><strong>Introduce tu nombre y teléfono:</strong></p>`;
+      let html = '<div style="margin-top:60px;">';
+      html += `<p style='color:#fff;'><strong>Servicio:</strong> <span style='color:#90caf9;'>${reserva.servicio}</span></p>`;
+      html += `<p style='color:#fff;'><strong>Hora elegida:</strong> ${hora}</p>`;
+      html += `<p style='color:#fff;'><strong>Introduce tu nombre y teléfono:</strong></p>`;
       html += `<div style='display:flex; flex-direction:column; align-items:center; gap:12px; margin-top:18px; margin-bottom:18px;'>
         <input id='input-nombre' type='text' placeholder='Nombre...' style='font-size:16px; padding:8px 14px; border-radius:8px; border:1.5px solid #90caf9; outline:none; width:90%; max-width:220px;'/>
         <input id='input-telefono' type='tel' placeholder='Teléfono...' style='font-size:16px; padding:8px 14px; border-radius:8px; border:1.5px solid #90caf9; outline:none; width:90%; max-width:220px;'/>
         <button id='btn-check-nombre-tel' disabled style='background:linear-gradient(90deg,#90caf9,#2196f3); color:#fff; border:none; border-radius:50%; width:38px; height:38px; font-size:22px; font-weight:bold; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px #90caf955; cursor:pointer; transition:background 0.2s, opacity 0.2s; opacity:0.7;'><span>✔️</span></button>
       </div>`;
       html += `<div style='display:flex; justify-content:center; margin-top:30px;'><button id='btn-volver-dia' style='background:linear-gradient(90deg,#e3e3e3,#90caf9); color:#2196f3; border:none; border-radius:24px; font-size:16px; font-weight:bold; padding:10px 28px; box-shadow:0 2px 8px #90caf933; cursor:pointer; transition:background 0.2s;'>Volver</button></div>`;
+      html += '</div>';
       chat.innerHTML = html;
       setTimeout(()=>{
         document.getElementById('input-nombre').focus();
@@ -852,19 +1019,20 @@
         esperandoNombre = false;
         esperandoTelefono = false;
         // Mostrar resumen y pedir confirmación
-        let resumen = '';
+        let resumen = '<div style="margin-top:60px;">';
         resumen += `<div style='background:rgba(255,255,255,0.95); border-radius:14px; box-shadow:0 2px 8px #90caf933; padding:18px 18px 10px 18px; margin-bottom:18px;'>`;
-        resumen += `<div style='font-size:18px; color:#263238; font-weight:bold; margin-bottom:10px;'>Confirma tu reserva</div>`;
-        resumen += `<div style='margin-bottom:6px;'><strong>Servicio:</strong> <span style='color:#1565c0;'>${reserva.servicio}</span></div>`;
-        resumen += `<div style='margin-bottom:6px;'><strong>Día:</strong> ${formatearFecha(reserva.dia)}</div>`;
-        resumen += `<div style='margin-bottom:6px;'><strong>Hora:</strong> ${reserva.hora}</div>`;
-        resumen += `<div style='margin-bottom:6px;'><strong>Nombre:</strong> ${reserva.nombre}</div>`;
-        resumen += `<div style='margin-bottom:6px;'><strong>Teléfono:</strong> ${reserva.telefono}</div>`;
+        resumen += `<div style='font-size:18px; color:#fff; font-weight:bold; margin-bottom:10px;'>Confirma tu reserva</div>`;
+        resumen += `<div style='margin-bottom:6px; color:#fff;'><strong>Servicio:</strong> <span style='color:#90caf9;'>${reserva.servicio}</span></div>`;
+        resumen += `<div style='margin-bottom:6px; color:#fff;'><strong>Día:</strong> ${formatearFecha(reserva.dia)}</div>`;
+        resumen += `<div style='margin-bottom:6px; color:#fff;'><strong>Hora:</strong> ${reserva.hora}</div>`;
+        resumen += `<div style='margin-bottom:6px; color:#fff;'><strong>Nombre:</strong> ${reserva.nombre}</div>`;
+        resumen += `<div style='margin-bottom:6px; color:#fff;'><strong>Teléfono:</strong> ${reserva.telefono}</div>`;
         resumen += `</div>`;
         resumen += `<div style='display:flex; justify-content:center; gap:18px; margin-bottom:10px;'>`;
         resumen += `<button id='btn-confirmar-reserva' style='background:linear-gradient(90deg,#90caf9,#2196f3); color:#fff; border:none; border-radius:24px; font-size:17px; font-weight:bold; padding:10px 32px; box-shadow:0 2px 8px #90caf955; cursor:pointer; transition:background 0.2s;'>Confirmar reserva</button>`;
         resumen += `<button id='btn-cancelar-reserva' style='background:linear-gradient(90deg,#e3e3e3,#90caf9); color:#2196f3; border:none; border-radius:24px; font-size:17px; font-weight:bold; padding:10px 32px; box-shadow:0 2px 8px #90caf933; cursor:pointer; transition:background 0.2s;'>Cancelar</button>`;
         resumen += `</div>`;
+        resumen += '</div>';
         chat.innerHTML = resumen;
         document.getElementById('btn-confirmar-reserva').onclick = async function() {
           this.disabled = true;
