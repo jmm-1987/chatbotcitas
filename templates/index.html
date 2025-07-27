@@ -339,7 +339,7 @@
       margin-right: auto;
     }
     .header-fixed {
-      position: absolute;
+      position: fixed;
       top: 18px;
       right: 24px;
       font-family: 'Oswald', Arial, sans-serif;
@@ -348,9 +348,14 @@
       font-weight: 400;
       letter-spacing: 0.18em;
       text-transform: uppercase;
-      z-index: 10;
+      z-index: 10000;
       pointer-events: none;
       text-align: right;
+      background: linear-gradient(rgba(255,255,255,0.15), rgba(255,255,255,0.15)),
+        url('/static/fondo.png') center center/cover no-repeat;
+      padding: 8px 16px;
+      border-radius: 8px;
+      backdrop-filter: blur(8px);
     }
     #chat-widget {
       position: relative;
@@ -445,16 +450,54 @@
     });
     // --- FIN historial ---
 
+    // Función para mostrar flecha de scroll solo en secciones específicas
+    function mostrarFlechaScroll() {
+      if (!document.getElementById('scroll-arrow')) {
+        const arrow = document.createElement('div');
+        arrow.id = 'scroll-arrow';
+        arrow.innerHTML = `<svg width='38' height='38' viewBox='0 0 38 38'><circle cx='19' cy='19' r='19' fill='#90caf9' opacity='0.85'/><polyline points='12,16 19,25 26,16' fill='none' stroke='#1565c0' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/></svg>`;
+        arrow.style.position = 'absolute';
+        arrow.style.right = '20px';
+        arrow.style.bottom = '30px';
+        arrow.style.zIndex = '9999';
+        arrow.style.cursor = 'pointer';
+        arrow.style.animation = 'arrow-bounce 1.2s infinite';
+        arrow.style.display = 'none';
+        document.getElementById('chat-widget').appendChild(arrow);
+        const style = document.createElement('style');
+        style.innerHTML = `@keyframes arrow-bounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(12px);} }`;
+        document.head.appendChild(style);
+        arrow.onclick = () => { chat.scrollTop = chat.scrollHeight; };
+        
+        // Mostrar flecha solo si hay scroll
+        setTimeout(() => {
+          if (chat.scrollHeight > chat.clientHeight) {
+            arrow.style.display = 'block';
+          }
+        }, 500);
+      }
+    }
+
+    // Función para ocultar la flecha de scroll
+    function ocultarFlechaScroll() {
+      const arrow = document.getElementById('scroll-arrow');
+      if (arrow) {
+        arrow.style.display = 'none';
+      }
+    }
+
     // --- NUEVO: Mostrar opciones principales al abrir ---
     function mostrarOpcionesPrincipales(mostrarSaludo = true) {
       pushState('menu');
       // Eliminar cualquier botón de 'Volver' existente
       const btnVolver = document.getElementById('btn-volver');
       if (btnVolver) btnVolver.remove();
+      // Ocultar flecha de scroll en el menú principal
+      ocultarFlechaScroll();
       // Limpiar el chat
       chat.innerHTML = '';
       // Siempre mostrar la pantalla de inicio completa
-      chat.innerHTML += `<div class="header-container">
+      chat.innerHTML += `<div class="header-container" style="margin-top:20px;">
         <div class="welcome-message">¡Hola!<br>Bienvenida a Peluquería JM, ¿en qué podemos ayudarte hoy?</div>
       </div>`;
       chat.innerHTML += `<div class="botones-grid">
@@ -559,6 +602,7 @@
       // Limpiar el chat
       chat.innerHTML = '';
       if (accion === 'consultarHorarios') {
+        ocultarFlechaScroll();
         chat.innerHTML += `
         <div style='display:flex; flex-direction:column; align-items:center; justify-content:center; margin-bottom:18px; min-height:60vh;'>
           <div style='width:90px; height:90px; margin-bottom:10px; margin-top:80px;'>
@@ -581,8 +625,9 @@
         </style>
         `;
       } else if (accion === 'verUbicacion') {
+        ocultarFlechaScroll();
         chat.innerHTML += `
-        <div style='display:flex; flex-direction:column; align-items:center; justify-content:center; height:100vh; margin-top:-60px;'>
+        <div style='display:flex; flex-direction:column; align-items:center; justify-content:flex-start; min-height:50vh; margin-top:60px;'>
           <div style='font-size:20px; color:#fff; font-weight:bold; margin-bottom:12px;'>Nuestra ubicación</div>
           <iframe
             src="https://www.google.com/maps?q=43.3623,-8.4115&z=16&output=embed"
@@ -596,7 +641,7 @@
         `;
       } else if (accion === 'galeriaTrabajos') {
         // Galería de imágenes de peinados
-        chat.innerHTML = `<div style='display:flex; flex-direction:column; align-items:center; margin-top:40px;'>
+        chat.innerHTML = `<div style='display:flex; flex-direction:column; align-items:center; margin-top:60px;'>
           <div style='font-size:20px; color:#fff; font-weight:bold; text-align:center; margin-bottom:20px;'>Galería de trabajos</div>`;
         const imagenes = [
           'https://images.pexels.com/photos/3993449/pexels-photo-3993449.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop',
@@ -617,30 +662,7 @@
         };
         // Flecha animada de scroll
         setTimeout(() => { chat.scrollTop = 0; }, 50);
-        if (!document.getElementById('scroll-arrow')) {
-          const arrow = document.createElement('div');
-          arrow.id = 'scroll-arrow';
-          arrow.innerHTML = `<svg width='38' height='38' viewBox='0 0 38 38'><circle cx='19' cy='19' r='19' fill='#90caf9' opacity='0.85'/><polyline points='12,16 19,25 26,16' fill='none' stroke='#1565c0' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/></svg>`;
-          arrow.style.position = 'absolute';
-          arrow.style.right = '20px';
-          arrow.style.bottom = '30px';
-          arrow.style.zIndex = '9999';
-          arrow.style.cursor = 'pointer';
-          arrow.style.animation = 'arrow-bounce 1.2s infinite';
-          arrow.style.display = 'none';
-          document.getElementById('chat-widget').appendChild(arrow);
-          const style = document.createElement('style');
-          style.innerHTML = `@keyframes arrow-bounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(12px);} }`;
-          document.head.appendChild(style);
-          arrow.onclick = () => { chat.scrollTop = chat.scrollHeight; };
-          
-          // Mostrar flecha solo si hay scroll
-          setTimeout(() => {
-            if (chat.scrollHeight > chat.clientHeight) {
-              arrow.style.display = 'block';
-            }
-          }, 500);
-        }
+        mostrarFlechaScroll();
         scrollToBottom();
         // No añadir el botón grande, solo el animado (se añade por setTimeout más abajo)
       } else if (accion === 'solicitarCita') {
@@ -648,31 +670,8 @@
         chat.innerHTML = `<div style='margin-top:60px;'>` + renderServicios('¿Qué servicio deseas reservar?', 'elegirServicio', true) + `</div>`;
         // Scroll arriba al abrir
         chat.scrollTop = 0;
-        // Flecha animada de scroll
-        if (!document.getElementById('scroll-arrow')) {
-          const arrow = document.createElement('div');
-          arrow.id = 'scroll-arrow';
-          arrow.innerHTML = `<svg width='38' height='38' viewBox='0 0 38 38'><circle cx='19' cy='19' r='19' fill='#90caf9' opacity='0.85'/><polyline points='12,16 19,25 26,16' fill='none' stroke='#1565c0' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/></svg>`;
-          arrow.style.position = 'absolute';
-          arrow.style.right = '20px';
-          arrow.style.bottom = '30px';
-          arrow.style.zIndex = '9999';
-          arrow.style.cursor = 'pointer';
-          arrow.style.animation = 'arrow-bounce 1.2s infinite';
-          arrow.style.display = 'none';
-          document.getElementById('chat-widget').appendChild(arrow);
-          const style = document.createElement('style');
-          style.innerHTML = `@keyframes arrow-bounce { 0%,100%{transform:translateY(0);} 50%{transform:translateY(12px);} }`;
-          document.head.appendChild(style);
-          arrow.onclick = () => { chat.scrollTop = chat.scrollHeight; };
-          
-          // Mostrar flecha solo si hay scroll
-          setTimeout(() => {
-            if (chat.scrollHeight > chat.clientHeight) {
-              arrow.style.display = 'block';
-            }
-          }, 500);
-        }
+        // Sin flecha de scroll en el proceso de reservas
+        ocultarFlechaScroll();
         // NO llamar a scrollToBottom aquí
         document.getElementById('btn-volver-servicio-lista').onclick = function() {
           chat.innerHTML = '';
@@ -825,7 +824,7 @@
         <button id='mes-siguiente' style='background:none; border:none; color:#2196f3; font-size:22px; cursor:pointer; padding:0 8px;'>&gt;</button>
       </div>`;
       html += `<table style='width:100%;border-collapse:collapse;text-align:center;margin-bottom:10px;'>`;
-      html += `<tr><th>Lun</th><th>Mar</th><th>Mié</th><th>Jue</th><th>Vie</th><th>Sáb</th><th>Dom</th></tr>`;
+      html += `<tr><th style='color:#fff;'>Lun</th><th style='color:#fff;'>Mar</th><th style='color:#fff;'>Mié</th><th style='color:#fff;'>Jue</th><th style='color:#fff;'>Vie</th><th style='color:#fff;'>Sáb</th><th style='color:#fff;'>Dom</th></tr>`;
       let primerDiaSemana = fechaActual.getDay(); // 0=domingo, 1=lunes, ..., 6=sábado
       let offset = (primerDiaSemana + 6) % 7;
       let diasEnMes = new Date(fechaActual.getFullYear(), fechaActual.getMonth() + 1, 0).getDate();
@@ -864,8 +863,8 @@
       html += '</table>';
       // Leyenda
       html += `<div style='display:flex; align-items:center; gap:16px; justify-content:center; margin-bottom:10px;'>
-        <span style='display:inline-flex; align-items:center; gap:6px;'><span style='display:inline-block; background:#43a047; color:#fff; border-radius:50%; width:22px; height:22px; line-height:22px; font-size:13px; font-weight:bold; text-align:center;'></span> Citas disponibles</span>
-        <span style='display:inline-flex; align-items:center; gap:6px;'><span style='display:inline-block; background:#b71c1c; color:#fff; border-radius:50%; width:22px; height:22px; line-height:22px; font-size:13px; font-weight:bold; text-align:center;'>-</span> Sin citas</span>
+        <span style='display:inline-flex; align-items:center; gap:6px; color:#fff;'><span style='display:inline-block; background:#43a047; color:#fff; border-radius:50%; width:22px; height:22px; line-height:22px; font-size:13px; font-weight:bold; text-align:center;'></span> Citas disponibles</span>
+        <span style='display:inline-flex; align-items:center; gap:6px; color:#fff;'><span style='display:inline-block; background:#b71c1c; color:#fff; border-radius:50%; width:22px; height:22px; line-height:22px; font-size:13px; font-weight:bold; text-align:center;'>-</span> Sin citas</span>
       </div>`;
       // Botón Volver a selección de servicio
       html += `<div style='display:flex; justify-content:center; margin-bottom:10px;'><button id='btn-volver-servicio' style='background:linear-gradient(90deg,#e3e3e3,#90caf9); color:#2196f3; border:none; border-radius:24px; font-size:16px; font-weight:bold; padding:10px 28px; box-shadow:0 2px 8px #90caf933; cursor:pointer; transition:background 0.2s;'>Volver</button></div>`;
@@ -970,7 +969,7 @@
       html += `<p style='color:#fff;'><strong>Introduce tu nombre y teléfono:</strong></p>`;
       html += `<div style='display:flex; flex-direction:column; align-items:center; gap:12px; margin-top:18px; margin-bottom:18px;'>
         <input id='input-nombre' type='text' placeholder='Nombre...' style='font-size:16px; padding:8px 14px; border-radius:8px; border:1.5px solid #90caf9; outline:none; width:90%; max-width:220px;'/>
-        <input id='input-telefono' type='tel' placeholder='Teléfono...' style='font-size:16px; padding:8px 14px; border-radius:8px; border:1.5px solid #90caf9; outline:none; width:90%; max-width:220px;'/>
+        <input id='input-telefono' type='tel' placeholder='Móvil (ej: 612345678)' style='font-size:16px; padding:8px 14px; border-radius:8px; border:1.5px solid #90caf9; outline:none; width:90%; max-width:220px;'/>
         <button id='btn-check-nombre-tel' disabled style='background:linear-gradient(90deg,#90caf9,#2196f3); color:#fff; border:none; border-radius:50%; width:38px; height:38px; font-size:22px; font-weight:bold; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px #90caf955; cursor:pointer; transition:background 0.2s, opacity 0.2s; opacity:0.7;'><span>✔️</span></button>
       </div>`;
       html += `<div style='display:flex; justify-content:center; margin-top:30px;'><button id='btn-volver-dia' style='background:linear-gradient(90deg,#e3e3e3,#90caf9); color:#2196f3; border:none; border-radius:24px; font-size:16px; font-weight:bold; padding:10px 28px; box-shadow:0 2px 8px #90caf933; cursor:pointer; transition:background 0.2s;'>Volver</button></div>`;
@@ -986,12 +985,25 @@
       const inputTelefono = document.getElementById('input-telefono');
       const btnCheck = document.getElementById('btn-check-nombre-tel');
       function validarInputs() {
-        if (inputNombre.value.trim().length > 0 && inputTelefono.value.trim().length > 0) {
+        const nombre = inputNombre.value.trim();
+        const telefono = inputTelefono.value.trim();
+        
+        // Validación de teléfono móvil español
+        const telefonoLimpio = telefono.replace(/\s/g, ''); // Eliminar espacios
+        const esTelefonoValido = /^[6-7]\d{8}$/.test(telefonoLimpio); // Móvil español: 6 o 7 + 8 dígitos
+        
+        if (nombre.length > 0 && esTelefonoValido) {
           btnCheck.disabled = false;
           btnCheck.style.opacity = '1';
+          inputTelefono.style.borderColor = '#90caf9';
         } else {
           btnCheck.disabled = true;
           btnCheck.style.opacity = '0.7';
+          if (telefono.length > 0 && !esTelefonoValido) {
+            inputTelefono.style.borderColor = '#f44336';
+          } else {
+            inputTelefono.style.borderColor = '#90caf9';
+          }
         }
       }
       inputNombre.addEventListener('input', validarInputs);
@@ -1015,18 +1027,32 @@
           return;
         }
         reserva.nombre = inputNombre.value.trim();
-        reserva.telefono = inputTelefono.value.trim();
+        reserva.telefono = inputTelefono.value.trim().replace(/\s/g, ''); // Limpiar espacios del teléfono
         esperandoNombre = false;
         esperandoTelefono = false;
         // Mostrar resumen y pedir confirmación
         let resumen = '<div style="margin-top:60px;">';
         resumen += `<div style='background:rgba(255,255,255,0.95); border-radius:14px; box-shadow:0 2px 8px #90caf933; padding:18px 18px 10px 18px; margin-bottom:18px;'>`;
-        resumen += `<div style='font-size:18px; color:#fff; font-weight:bold; margin-bottom:10px;'>Confirma tu reserva</div>`;
-        resumen += `<div style='margin-bottom:6px; color:#fff;'><strong>Servicio:</strong> <span style='color:#90caf9;'>${reserva.servicio}</span></div>`;
-        resumen += `<div style='margin-bottom:6px; color:#fff;'><strong>Día:</strong> ${formatearFecha(reserva.dia)}</div>`;
-        resumen += `<div style='margin-bottom:6px; color:#fff;'><strong>Hora:</strong> ${reserva.hora}</div>`;
-        resumen += `<div style='margin-bottom:6px; color:#fff;'><strong>Nombre:</strong> ${reserva.nombre}</div>`;
-        resumen += `<div style='margin-bottom:6px; color:#fff;'><strong>Teléfono:</strong> ${reserva.telefono}</div>`;
+        resumen += `<div style='display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:15px;'>`;
+        resumen += `<div style='width:32px; height:32px; animation: pulse-clock 2s infinite;'>`;
+        resumen += `<svg viewBox='0 0 24 24' width='32' height='32' style='color:#90caf9;'>`;
+        resumen += `<circle cx='12' cy='12' r='10' fill='none' stroke='currentColor' stroke-width='2'/>`;
+        resumen += `<polyline points='12,6 12,12 16,14' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/>`;
+        resumen += `</svg>`;
+        resumen += `</div>`;
+        resumen += `<div style='font-size:18px; color:#000; font-weight:bold;'>Confirma tu reserva</div>`;
+        resumen += `</div>`;
+        resumen += `<style>`;
+        resumen += `@keyframes pulse-clock {`;
+        resumen += `  0%, 100% { transform: scale(1); opacity: 1; }`;
+        resumen += `  50% { transform: scale(1.1); opacity: 0.8; }`;
+        resumen += `}`;
+        resumen += `</style>`;
+        resumen += `<div style='margin-bottom:6px; color:#000;'><strong>Servicio:</strong> <span style='color:#90caf9;'>${reserva.servicio}</span></div>`;
+        resumen += `<div style='margin-bottom:6px; color:#000;'><strong>Día:</strong> ${formatearFecha(reserva.dia)}</div>`;
+        resumen += `<div style='margin-bottom:6px; color:#000;'><strong>Hora:</strong> ${reserva.hora}</div>`;
+        resumen += `<div style='margin-bottom:6px; color:#000;'><strong>Nombre:</strong> ${reserva.nombre}</div>`;
+        resumen += `<div style='margin-bottom:6px; color:#000;'><strong>Teléfono:</strong> ${reserva.telefono}</div>`;
         resumen += `</div>`;
         resumen += `<div style='display:flex; justify-content:center; gap:18px; margin-bottom:10px;'>`;
         resumen += `<button id='btn-confirmar-reserva' style='background:linear-gradient(90deg,#90caf9,#2196f3); color:#fff; border:none; border-radius:24px; font-size:17px; font-weight:bold; padding:10px 32px; box-shadow:0 2px 8px #90caf955; cursor:pointer; transition:background 0.2s;'>Confirmar reserva</button>`;
@@ -1056,7 +1082,7 @@
     }
 
     async function reservarCita() {
-      chat.innerHTML += `<p><em>Reservando tu cita...</em></p>`;
+      chat.innerHTML += `<p style='color:#fff;'><em>Reservando tu cita...</em></p>`;
       scrollToBottom();
       const res = await fetch('/reservar_cita', {
         method: 'POST',
@@ -1071,7 +1097,7 @@
       });
       const data = await res.json();
       if (data.ok) {
-        chat.innerHTML += `<p><strong>✅ ¡Cita reservada correctamente!</strong></p>`;
+        chat.innerHTML += `<p style='color:#fff;'><strong>✅ ¡Cita reservada correctamente!</strong></p>`;
         // Guardar datos de la última cita
         ultimaCita = {
           servicio: reserva.servicio,
@@ -1079,14 +1105,14 @@
           hora: reserva.hora
         };
         // Preguntar por recordatorio
-        chat.innerHTML += `<p>¿Quieres que te enviemos un recordatorio de tu cita por email?</p>`;
+        chat.innerHTML += `<p style='color:#fff;'>¿Quieres que te enviemos un recordatorio de tu cita por email?</p>`;
         chat.innerHTML += `<div id='recordatorio-btns'>
           <button onclick=\"recordatorioRespuesta('si')\">Sí</button>
           <button onclick=\"recordatorioRespuesta('no')\">No</button>
         </div>`;
         // (Eliminado el botón volver a inicio aquí)
       } else {
-        chat.innerHTML += `<p><strong>❌ Error:</strong> ${data.msg}</p>`;
+        chat.innerHTML += `<p style='color:#fff;'><strong>❌ Error:</strong> ${data.msg}</p>`;
       }
       scrollToBottom();
       // Resetear reserva
@@ -1100,7 +1126,7 @@
       const btns = document.getElementById('recordatorio-btns');
       if (btns) btns.remove();
       if (resp === 'si') {
-        chat.innerHTML += `<p>Por favor, introduce tu email:</p>`;
+        chat.innerHTML += `<p style='color:#fff;'>Por favor, introduce tu email:</p>`;
         chat.innerHTML += `<div style='display:flex; justify-content:center; align-items:center; gap:10px; margin-top:18px; margin-bottom:18px;'>
           <input id='input-email' type='email' placeholder='tucorreo@email.com' style='font-size:16px; padding:8px 14px; border-radius:8px; border:1.5px solid #90caf9; outline:none; width:80%; max-width:220px;'/>
           <button id='btn-check-email' disabled style='background:linear-gradient(90deg,#90caf9,#2196f3); color:#fff; border:none; border-radius:50%; width:38px; height:38px; font-size:22px; font-weight:bold; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 8px #90caf955; cursor:pointer; transition:background 0.2s, opacity 0.2s; opacity:0.7;'><span>✔️</span></button>
@@ -1133,9 +1159,9 @@
           });
           const data = await res.json();
           if (data.ok) {
-            chat.innerHTML += `<p>✅ ¡Recordatorio enviado correctamente!</p>`;
+            chat.innerHTML += `<p style='color:#fff;'>✅ ¡Recordatorio enviado correctamente!</p>`;
           } else {
-            chat.innerHTML += `<p>❌ Error al enviar el recordatorio: ${data.msg || 'Inténtalo de nuevo.'}</p>`;
+            chat.innerHTML += `<p style='color:#fff;'>❌ Error al enviar el recordatorio: ${data.msg || 'Inténtalo de nuevo.'}</p>`;
           }
           esperandoEmail = false;
           // Botón volver a inicio tras responder al recordatorio
@@ -1146,7 +1172,8 @@
           scrollToBottom();
         };
       } else {
-        chat.innerHTML += `<p>¡Gracias! Tu cita ha sido registrada.</p>`;
+        chat.innerHTML += `<p style='color:#fff;'>¡Gracias! Tu cita ha sido registrada.</p>`;
+        chat.innerHTML += `<p style='color:#fff; font-size:14px; margin-top:8px;'>Puedes consultarla en cualquier momento a través del menú "Ver mis citas".</p>`;
         // Botón volver a inicio tras responder al recordatorio
         chat.innerHTML += `<div style='display:flex; justify-content:center; margin-top:18px;'><button id='btn-volver-inicio' style='background:linear-gradient(90deg,#e3e3e3,#90caf9); color:#2196f3; border:none; border-radius:24px; font-size:16px; font-weight:bold; padding:10px 28px; box-shadow:0 2px 8px #90caf933; cursor:pointer; transition:background 0.2s;'>Volver a inicio</button></div>`;
         document.getElementById('btn-volver-inicio').onclick = function() {
