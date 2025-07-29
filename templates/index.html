@@ -894,7 +894,10 @@
 
     function formatearFecha(fechaStr) {
       const d = new Date(fechaStr);
-      return d.toLocaleDateString('es-ES', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' });
+      const dia = d.getDate().toString().padStart(2, '0');
+      const mes = (d.getMonth() + 1).toString().padStart(2, '0');
+      const anio = d.getFullYear();
+      return `${dia}/${mes}/${anio}`;
     }
 
     window.elegirDia = async function(dia) {

@@ -69,6 +69,14 @@ def normalizar_fecha(texto):
         return dt.strftime('%Y-%m-%d')
     return texto  # Si no se puede, se deja igual
 
+def formatear_fecha_display(fecha_str):
+    """Convierte fecha YYYY-MM-DD a DD/MM/AAAA"""
+    try:
+        dt = datetime.datetime.strptime(fecha_str, '%Y-%m-%d')
+        return dt.strftime('%d/%m/%Y')
+    except:
+        return fecha_str
+
 # Inicializar la base de datos (si no existe)
 def init_db():
     conn = sqlite3.connect(DB_PATH)
@@ -217,7 +225,7 @@ def citas_dia():
     conn.close()
     ocupadas = [row[0] for row in rows]
     citas = [
-        {'hora': row[0], 'nombre': row[1], 'servicio': row[2], 'telefono': row[3]} for row in rows
+        {'hora': row[0], 'nombre': row[1], 'servicio': row[2], 'telefono': row[3], 'dia': formatear_fecha_display(dia)} for row in rows
     ]
     return jsonify({'ocupadas': ocupadas, 'citas': citas})
 
@@ -240,6 +248,7 @@ def proximos_dias_disponibles():
         libres = [h for h in HORAS if h not in ocupadas]
         dias.append({
             'fecha': dia_str,
+            'fecha_display': formatear_fecha_display(dia_str),
             'disponibles': len(libres),
             'weekday': dia.weekday()  # 0=lunes, 6=domingo
         })

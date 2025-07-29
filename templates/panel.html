@@ -4,25 +4,344 @@
   <meta charset="UTF-8">
   <title>Panel de Control - Citas Peluquería</title>
   <style>
-    body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 0; }
-    .panel-container { max-width: 500px; margin: 40px auto; background: #fff; border-radius: 10px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); padding: 30px; }
-    h2 { color: #2196f3; text-align: center; }
-    label { font-weight: bold; }
-    .horas { margin-top: 20px; }
-    .hora-libre { background: #e3f7e3; color: #219653; border: 1px solid #b7e4b7; border-radius: 6px; padding: 6px 12px; margin: 4px; display: inline-block; }
-    .hora-ocupada { background: #ffeaea; color: #c0392b; border: 1px solid #f5b7b1; border-radius: 6px; padding: 6px 12px; margin: 4px; display: inline-block; text-decoration: line-through; }
-    .citas-list { margin-top: 20px; }
-    .cita { background: #f0f0f0; border-radius: 6px; padding: 8px 12px; margin-bottom: 8px; }
+    body { 
+      font-family: Arial, sans-serif; 
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      margin: 0; 
+      padding: 20px; 
+      min-height: 100vh;
+    }
+    .panel-container { 
+      max-width: 1200px; 
+      margin: 0 auto; 
+      background: rgba(255,255,255,0.95); 
+      border-radius: 15px; 
+      box-shadow: 0 8px 32px rgba(0,0,0,0.1); 
+      padding: 30px;
+      backdrop-filter: blur(10px);
+    }
+    h1 { 
+      color: #2196f3; 
+      text-align: center; 
+      margin-bottom: 30px;
+      font-size: 28px;
+    }
+    .calendario-semanal {
+      display: grid;
+      grid-template-columns: 80px repeat(7, 1fr);
+      gap: 2px;
+      margin-top: 20px;
+    }
+    
+    .calendario-diario {
+      display: none;
+      margin-top: 20px;
+    }
+    
+    .dia-header {
+      background: #2196f3;
+      color: white;
+      padding: 20px;
+      text-align: center;
+      border-radius: 10px 10px 0 0;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    
+    .horas-lista {
+      background: white;
+      border-radius: 0 0 10px 10px;
+      overflow: hidden;
+    }
+    
+    .hora-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      border-bottom: 1px solid #eee;
+      transition: background 0.2s;
+    }
+    
+    .hora-item:last-child {
+      border-bottom: none;
+    }
+    
+    .hora-item.libre {
+      background: #e8f5e8;
+    }
+    
+    .hora-item.ocupada {
+      background: #ffebee;
+    }
+    
+    .hora-item.cerrado {
+      background: #f5f5f5;
+      color: #999;
+    }
+    
+    .hora-texto {
+      font-weight: bold;
+      font-size: 16px;
+    }
+    
+    .cita-detalle {
+      text-align: right;
+      font-size: 14px;
+    }
+    
+    .cita-nombre-mobile {
+      font-weight: bold;
+      color: #1565c0;
+      display: block;
+    }
+    
+    .cita-servicio-mobile {
+      color: #666;
+      font-size: 12px;
+    }
+    
+    .dia-selector {
+      display: none;
+      margin-bottom: 20px;
+    }
+    
+    .dia-btn {
+      background: #2196f3;
+      color: white;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 25px;
+      margin: 0 5px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+    
+    .dia-btn:hover {
+      background: #1976d2;
+    }
+    
+    .dia-btn.activo {
+      background: #1565c0;
+    }
+    .header-dia {
+      background: #2196f3;
+      color: white;
+      padding: 15px 8px;
+      text-align: center;
+      font-weight: bold;
+      border-radius: 8px 8px 0 0;
+      font-size: 14px;
+    }
+    .header-hora {
+      background: #f5f5f5;
+      color: #333;
+      padding: 6px 5px;
+      text-align: center;
+      font-weight: bold;
+      font-size: 12px;
+      border-right: 1px solid #ddd;
+    }
+    .celda-hora {
+      background: #f9f9f9;
+      border: 1px solid #e0e0e0;
+      padding: 4px 5px;
+      text-align: center;
+      font-size: 11px;
+      min-height: 25px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .celda-hora.libre {
+      background: #e8f5e8;
+      color: #2e7d32;
+    }
+    .celda-hora.ocupada {
+      background: #ffebee;
+      color: #c62828;
+      font-weight: bold;
+    }
+    .cita-info {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      right: 2px;
+      background: rgba(255,255,255,0.95);
+      border-radius: 4px;
+      padding: 2px 4px;
+      font-size: 10px;
+      line-height: 1.2;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+    .cita-nombre {
+      font-weight: bold;
+      color: #1565c0;
+    }
+    .cita-servicio {
+      color: #666;
+      font-size: 9px;
+    }
+    .controles {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 20px;
+      align-items: center;
+    }
+    .btn-nav {
+      background: #2196f3;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 25px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s;
+    }
+    .btn-nav:hover {
+      background: #1976d2;
+      transform: translateY(-2px);
+    }
+    .semana-actual {
+      font-size: 18px;
+      font-weight: bold;
+      color: #333;
+      min-width: 200px;
+      text-align: center;
+    }
+    .resumen {
+      background: #e3f2fd;
+      border-radius: 10px;
+      padding: 20px;
+      margin-top: 20px;
+    }
+    .resumen h3 {
+      color: #1565c0;
+      margin-top: 0;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 15px;
+      margin-top: 15px;
+    }
+    .stat {
+      background: white;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .stat-numero {
+      font-size: 24px;
+      font-weight: bold;
+      color: #2196f3;
+    }
+    .stat-label {
+      color: #666;
+      font-size: 14px;
+      margin-top: 5px;
+    }
+    
+    /* Responsive para móvil */
+    @media (max-width: 768px) {
+      .panel-container {
+        margin: 10px;
+        padding: 20px;
+      }
+      
+      h1 {
+        font-size: 24px;
+      }
+      
+      .calendario-semanal {
+        display: none;
+      }
+      
+      .calendario-diario {
+        display: block;
+      }
+      
+      .dia-selector {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      
+      .dia-btn {
+        padding: 10px 15px;
+        font-size: 14px;
+        margin: 0 2px;
+      }
+      
+      .controles {
+        flex-direction: column;
+        gap: 15px;
+      }
+      
+      .semana-actual {
+        font-size: 16px;
+        min-width: auto;
+      }
+      
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+      }
+      
+      .stat {
+        padding: 12px;
+      }
+      
+      .stat-numero {
+        font-size: 20px;
+      }
+      
+      .stat-label {
+        font-size: 12px;
+      }
+    }
   </style>
 </head>
 <body>
   <div class="panel-container">
-    <h2>Panel de Control de Citas</h2>
-    <label for="fecha">Selecciona un día:</label>
-    <input type="date" id="fecha" />
-    <div class="horas" id="horas"></div>
-    <div class="citas-list" id="citas"></div>
+    <h1>📅 Panel de Control de Citas</h1>
+    
+    <div class="controles">
+      <button class="btn-nav" onclick="cambiarSemana(-1)">← Semana Anterior</button>
+      <div class="semana-actual" id="semana-actual"></div>
+      <button class="btn-nav" onclick="cambiarSemana(1)">Semana Siguiente →</button>
+    </div>
+
+    <div class="calendario-semanal" id="calendario">
+      <!-- Se llena dinámicamente -->
+    </div>
+
+    <div class="dia-selector" id="dia-selector">
+      <!-- Se llena dinámicamente -->
+    </div>
+
+    <div class="calendario-diario" id="calendario-diario">
+      <div class="dia-header" id="dia-header">
+        <!-- Se llena dinámicamente -->
+      </div>
+      <div class="horas-lista" id="horas-lista">
+        <!-- Se llena dinámicamente -->
+      </div>
+    </div>
+
+    <div class="resumen">
+      <h3>📊 Resumen de la Semana</h3>
+      <div class="stats" id="stats">
+        <!-- Se llena dinámicamente -->
+      </div>
+    </div>
   </div>
+
   <script>
     const HORAS = [
       '10:00', '10:30', '11:00', '11:30',
@@ -30,39 +349,265 @@
       '16:00', '16:30', '17:00', '17:30',
       '18:00', '18:30', '19:00', '19:30'
     ];
-    const fechaInput = document.getElementById('fecha');
-    const horasDiv = document.getElementById('horas');
-    const citasDiv = document.getElementById('citas');
+    
+    let semanaActual = new Date();
+    semanaActual.setDate(semanaActual.getDate() - semanaActual.getDay() + 1); // Lunes
+    let diaActual = new Date();
 
-    fechaInput.addEventListener('change', async function() {
-      const dia = this.value;
-      if (!dia) return;
-      horasDiv.innerHTML = '<em>Cargando disponibilidad...</em>';
-      citasDiv.innerHTML = '';
-      // Consultar horas ocupadas
-      const res = await fetch('/citas_dia', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ dia })
-      });
-      const data = await res.json();
-      // Mostrar horas libres y ocupadas
-      horasDiv.innerHTML = '';
-      HORAS.forEach(h => {
-        if (data.ocupadas.includes(h)) {
-          horasDiv.innerHTML += `<span class='hora-ocupada'>${h}</span>`;
-        } else {
-          horasDiv.innerHTML += `<span class='hora-libre'>${h}</span>`;
+    function formatearFecha(fecha) {
+      const dia = fecha.getDate().toString().padStart(2, '0');
+      const mes = (fecha.getMonth() + 1).toString().padStart(2, '0');
+      const anio = fecha.getFullYear();
+      return `${dia}/${mes}/${anio}`;
+    }
+
+    function formatearFechaAPI(fecha) {
+      return fecha.toISOString().split('T')[0];
+    }
+
+    function obtenerNombreDia(fecha) {
+      const dias = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+      return dias[fecha.getDay()];
+    }
+
+    function obtenerDiaSemana(fecha) {
+      const dias = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+      return dias[fecha.getDay()];
+    }
+
+    function cambiarSemana(direccion) {
+      semanaActual.setDate(semanaActual.getDate() + (direccion * 7));
+      cargarCalendario();
+    }
+
+    function cambiarDia(direccion) {
+      diaActual.setDate(diaActual.getDate() + direccion);
+      cargarCalendarioDiario();
+    }
+
+    function seleccionarDia(fecha) {
+      diaActual = new Date(fecha);
+      cargarCalendarioDiario();
+    }
+
+    async function cargarCalendario() {
+      const calendario = document.getElementById('calendario');
+      const semanaActualDiv = document.getElementById('semana-actual');
+      
+      // Actualizar título de la semana
+      const finSemana = new Date(semanaActual);
+      finSemana.setDate(finSemana.getDate() + 6);
+      semanaActualDiv.textContent = `${formatearFecha(semanaActual)} - ${formatearFecha(finSemana)}`;
+
+      // Crear encabezados de días
+      let html = '<div class="header-hora">Hora</div>';
+      for (let i = 0; i < 7; i++) {
+        const dia = new Date(semanaActual);
+        dia.setDate(dia.getDate() + i);
+        html += `<div class="header-dia">${obtenerNombreDia(dia)}<br>${dia.getDate()}</div>`;
+      }
+
+      // Crear filas de horas
+      for (const hora of HORAS) {
+        html += `<div class="header-hora">${hora}</div>`;
+        
+        for (let i = 0; i < 7; i++) {
+          const dia = new Date(semanaActual);
+          dia.setDate(dia.getDate() + i);
+          const fechaStr = formatearFecha(dia);
+          
+          // Verificar si es domingo (día cerrado)
+          if (dia.getDay() === 0) {
+            html += `<div class="celda-hora" style="background:#f0f0f0; color:#999;">Cerrado</div>`;
+          } else {
+            html += `<div class="celda-hora libre" data-fecha="${fechaStr}" data-hora="${hora}">Libre</div>`;
+          }
         }
-      });
-      // Mostrar citas del día
-      if (data.citas && data.citas.length) {
-        citasDiv.innerHTML = '<h4>Citas del día:</h4>';
-        data.citas.forEach(cita => {
-          citasDiv.innerHTML += `<div class='cita'><b>${cita.hora}</b> - ${cita.servicio} - ${cita.nombre} (${cita.telefono||''})</div>`;
+      }
+
+      calendario.innerHTML = html;
+
+      // Cargar datos de citas para toda la semana
+      await cargarCitasSemana();
+    }
+
+    async function cargarCitasSemana() {
+      const celdas = document.querySelectorAll('.celda-hora[data-fecha]');
+      const citasSemana = [];
+
+      // Cargar citas para cada día de la semana
+      for (let i = 0; i < 7; i++) {
+        const dia = new Date(semanaActual);
+        dia.setDate(dia.getDate() + i);
+        const fechaStr = formatearFecha(dia);
+        
+        if (dia.getDay() !== 0) { // No domingo
+          try {
+            const res = await fetch('/citas_dia', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ dia: formatearFechaAPI(dia) })
+            });
+            const data = await res.json();
+            citasSemana.push(...data.citas);
+            
+            // Actualizar celdas con citas
+            data.citas.forEach(cita => {
+              const celda = document.querySelector(`[data-fecha="${fechaStr}"][data-hora="${cita.hora}"]`);
+              if (celda) {
+                celda.className = 'celda-hora ocupada';
+                celda.innerHTML = `
+                  <div class="cita-info">
+                    <div class="cita-nombre">${cita.nombre}</div>
+                    <div class="cita-servicio">${cita.servicio}</div>
+                  </div>
+                `;
+              }
+            });
+          } catch (error) {
+            console.error('Error cargando citas:', error);
+          }
+        }
+      }
+
+      // Actualizar estadísticas
+      actualizarEstadisticas(citasSemana);
+      
+      // Cargar vista diaria si es móvil
+      if (window.innerWidth <= 768) {
+        cargarCalendarioDiario();
+      }
+    }
+
+    async function cargarCalendarioDiario() {
+      const diaHeader = document.getElementById('dia-header');
+      const horasLista = document.getElementById('horas-lista');
+      const diaSelector = document.getElementById('dia-selector');
+      
+      // Actualizar header del día
+      const nombreDia = obtenerDiaSemana(diaActual);
+      const fechaStr = formatearFecha(diaActual);
+      diaHeader.textContent = `${nombreDia}, ${diaActual.getDate()} de ${diaActual.toLocaleDateString('es-ES', {month: 'long'})}`;
+      
+      // Crear selector de días para la semana
+      let selectorHtml = '';
+      for (let i = 0; i < 7; i++) {
+        const dia = new Date(semanaActual);
+        dia.setDate(dia.getDate() + i);
+        const diaFechaStr = formatearFecha(dia);
+        const esActivo = diaFechaStr === fechaStr;
+        const esDomingo = dia.getDay() === 0;
+        
+        if (!esDomingo) {
+          selectorHtml += `<button class="dia-btn ${esActivo ? 'activo' : ''}" onclick="seleccionarDia('${diaFechaStr}')">${obtenerNombreDia(dia)} ${dia.getDate()}</button>`;
+        }
+      }
+      diaSelector.innerHTML = selectorHtml;
+      
+      // Crear lista de horas
+      let horasHtml = '';
+      
+      try {
+        const res = await fetch('/citas_dia', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ dia: formatearFechaAPI(diaActual) })
         });
-      } else {
-        citasDiv.innerHTML = '<em>No hay citas para este día.</em>';
+        const data = await res.json();
+        
+        for (const hora of HORAS) {
+          const cita = data.citas.find(c => c.hora === hora);
+          let clase = 'hora-item libre';
+          let contenido = `<div class="hora-texto">${hora}</div><div class="cita-detalle">Libre</div>`;
+          
+          if (cita) {
+            clase = 'hora-item ocupada';
+            contenido = `
+              <div class="hora-texto">${hora}</div>
+              <div class="cita-detalle">
+                <span class="cita-nombre-mobile">${cita.nombre}</span>
+                <span class="cita-servicio-mobile">${cita.servicio}</span>
+              </div>
+            `;
+          }
+          
+          horasHtml += `<div class="${clase}">${contenido}</div>`;
+        }
+      } catch (error) {
+        console.error('Error cargando citas del día:', error);
+        // Mostrar horas libres por defecto
+        for (const hora of HORAS) {
+          horasHtml += `<div class="hora-item libre"><div class="hora-texto">${hora}</div><div class="cita-detalle">Libre</div></div>`;
+        }
+      }
+      
+      horasLista.innerHTML = horasHtml;
+    }
+
+    function actualizarEstadisticas(citas) {
+      const stats = document.getElementById('stats');
+      
+      const totalCitas = citas.length;
+      const citasPorServicio = {};
+      const citasPorDia = {};
+      
+      citas.forEach(cita => {
+        // Contar por servicio
+        citasPorServicio[cita.servicio] = (citasPorServicio[cita.servicio] || 0) + 1;
+        
+        // Contar por día
+        const dia = obtenerDiaSemana(new Date(cita.dia));
+        citasPorDia[dia] = (citasPorDia[dia] || 0) + 1;
+      });
+
+      const servicioMasPopular = Object.keys(citasPorServicio).reduce((a, b) => 
+        citasPorServicio[a] > citasPorServicio[b] ? a : b, 'N/A');
+      
+      const diaMasOcupado = Object.keys(citasPorDia).reduce((a, b) => 
+        citasPorDia[a] > citasPorDia[b] ? a : b, 'N/A');
+
+      stats.innerHTML = `
+        <div class="stat">
+          <div class="stat-numero">${totalCitas}</div>
+          <div class="stat-label">Total Citas</div>
+        </div>
+        <div class="stat">
+          <div class="stat-numero">${servicioMasPopular}</div>
+          <div class="stat-label">Servicio Más Popular</div>
+        </div>
+        <div class="stat">
+          <div class="stat-numero">${diaMasOcupado}</div>
+          <div class="stat-label">Día Más Ocupado</div>
+        </div>
+        <div class="stat">
+          <div class="stat-numero">${Math.round((totalCitas / 7) * 10) / 10}</div>
+          <div class="stat-label">Promedio/Día</div>
+        </div>
+      `;
+    }
+
+    // Cargar calendario al iniciar
+    document.addEventListener('DOMContentLoaded', function() {
+      cargarCalendario();
+      
+      // Detectar si es móvil y cargar vista diaria
+      if (window.innerWidth <= 768) {
+        cargarCalendarioDiario();
+      }
+    });
+
+    // Actualizar cada 30 segundos
+    setInterval(function() {
+      cargarCitasSemana();
+      if (window.innerWidth <= 768) {
+        cargarCalendarioDiario();
+      }
+    }, 30000);
+
+    // Manejar cambio de tamaño de ventana
+    window.addEventListener('resize', function() {
+      if (window.innerWidth <= 768) {
+        cargarCalendarioDiario();
       }
     });
   </script>
