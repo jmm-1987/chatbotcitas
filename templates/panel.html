@@ -2,6 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Panel de Control - Citas Peluquería</title>
   <style>
     body { 
@@ -10,6 +11,7 @@
       margin: 0; 
       padding: 20px; 
       min-height: 100vh;
+      overflow-x: hidden;
     }
     .panel-container { 
       max-width: 1200px; 
@@ -387,10 +389,15 @@
     
     /* Responsive para móvil */
     @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+      
       .panel-container {
-        margin: 10px;
-        padding: 35px 30px;
-        border-radius: 25px;
+        margin: 0;
+        padding: 20px 15px;
+        border-radius: 15px;
+        max-width: 100%;
       }
       
       h1 {
@@ -415,16 +422,18 @@
       }
       
       .dia-btn {
-        padding: 20px 28px;
-        font-size: 18px;
-        margin: 0 4px;
-        border-radius: 30px;
+        padding: 15px 20px;
+        font-size: 16px;
+        margin: 0 3px;
+        border-radius: 25px;
         background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
         color: white;
         border: none;
         font-weight: 600;
         transition: all 0.3s ease;
         box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        min-width: 80px;
+        min-height: 50px;
       }
       
       .dia-btn:hover {
@@ -466,9 +475,11 @@
       }
       
       .btn-nav {
-        padding: 20px 32px;
-        font-size: 18px;
-        border-radius: 40px;
+        padding: 15px 25px;
+        font-size: 16px;
+        border-radius: 30px;
+        min-height: 50px;
+        min-width: 120px;
       }
       
       .semana-actual {
@@ -507,17 +518,18 @@
       }
       
       .hora-item {
-        padding: 22px 30px;
-        margin: 6px 0;
-        border-radius: 15px;
+        padding: 15px 20px;
+        margin: 4px 0;
+        border-radius: 12px;
+        min-height: 60px;
       }
       
       .hora-texto {
-        font-size: 22px;
+        font-size: 18px;
       }
       
       .cita-detalle {
-        font-size: 18px;
+        font-size: 16px;
       }
       
       .cita-nombre-mobile {
@@ -550,17 +562,19 @@
       }
       
       .opcion-mobile {
-        width: 45px;
-        height: 45px;
+        width: 40px;
+        height: 40px;
         border-radius: 50%;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 18px;
+        font-size: 16px;
         cursor: pointer;
         transition: all 0.3s ease;
         box-shadow: 0 4px 10px rgba(0,0,0,0.15);
         border: 2px solid transparent;
+        min-width: 40px;
+        min-height: 40px;
       }
       
       .opcion-whatsapp {
@@ -594,6 +608,67 @@
         transform: translateY(-3px);
         box-shadow: 0 8px 20px rgba(239, 68, 68, 0.4);
         border-color: #ef4444;
+      }
+    }
+    
+    /* Responsive para pantallas muy pequeñas */
+    @media (max-width: 480px) {
+      body {
+        padding: 5px;
+      }
+      
+      .panel-container {
+        padding: 15px 10px;
+        margin: 0;
+        border-radius: 10px;
+      }
+      
+      h1 {
+        font-size: 24px;
+        margin-bottom: 20px;
+      }
+      
+      .dia-btn {
+        padding: 12px 16px;
+        font-size: 14px;
+        min-width: 70px;
+        min-height: 45px;
+      }
+      
+      .btn-nav {
+        padding: 12px 20px;
+        font-size: 14px;
+        min-width: 100px;
+        min-height: 45px;
+      }
+      
+      .hora-item {
+        padding: 12px 15px;
+        min-height: 55px;
+      }
+      
+      .hora-texto {
+        font-size: 16px;
+      }
+      
+      .cita-detalle {
+        font-size: 14px;
+      }
+      
+      .cita-nombre-mobile {
+        font-size: 18px;
+      }
+      
+      .cita-servicio-mobile {
+        font-size: 16px;
+      }
+      
+      .opcion-mobile {
+        width: 35px;
+        height: 35px;
+        font-size: 14px;
+        min-width: 35px;
+        min-height: 35px;
       }
     }
   </style>
@@ -696,7 +771,7 @@
       cargarCalendario();
       
       // Si es móvil, también actualizar la vista diaria
-      if (window.innerWidth <= 768) {
+      if (esMovil()) {
         console.log('📱 Móvil - Botón Hoy presionado');
         cargarCalendarioDiario();
       }
@@ -821,7 +896,7 @@
       actualizarEstadisticas(citasSemana);
       
       // Cargar vista diaria si es móvil
-      if (window.innerWidth <= 768) {
+      if (esMovil()) {
         cargarCalendarioDiario();
       }
     }
@@ -1059,7 +1134,7 @@
           if (data.ok) {
             alert('✅ Cita eliminada correctamente');
             // Recargar el calendario
-            if (window.innerWidth <= 768) {
+            if (esMovil()) {
               cargarCalendarioDiario();
             } else {
               cargarCitasSemana();
@@ -1100,12 +1175,17 @@
       }
     }
 
+    // Función para detectar si es móvil
+    function esMovil() {
+      return window.innerWidth <= 768 || /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    }
+    
     // Cargar calendario al iniciar
     document.addEventListener('DOMContentLoaded', function() {
       cargarCalendario();
       
       // Detectar si es móvil y cargar vista diaria
-      if (window.innerWidth <= 768) {
+      if (esMovil()) {
         // En móvil, mostrar solo el día de hoy por defecto
         diaActual = new Date(); // Asegurar que diaActual sea hoy
         console.log('📱 Móvil detectado - Cargando vista diaria para hoy');
@@ -1116,14 +1196,14 @@
     // Actualizar cada 30 segundos
     setInterval(function() {
       cargarCitasSemana();
-      if (window.innerWidth <= 768) {
+      if (esMovil()) {
         cargarCalendarioDiario();
       }
     }, 30000);
 
     // Manejar cambio de tamaño de ventana
     window.addEventListener('resize', function() {
-      if (window.innerWidth <= 768) {
+      if (esMovil()) {
         cargarCalendarioDiario();
       }
     });
@@ -1145,7 +1225,7 @@
           // Recargar el calendario para mostrar las nuevas citas
           setTimeout(() => {
             cargarCalendario();
-            if (window.innerWidth <= 768) {
+            if (esMovil()) {
               cargarCalendarioDiario();
             }
           }, 1000);
@@ -1178,7 +1258,7 @@
           // Recargar el calendario para mostrar los cambios
           setTimeout(() => {
             cargarCalendario();
-            if (window.innerWidth <= 768) {
+            if (esMovil()) {
               cargarCalendarioDiario();
             }
           }, 1000);
