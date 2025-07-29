@@ -340,6 +340,20 @@
         <!-- Se llena dinámicamente -->
       </div>
     </div>
+
+    <!-- Botones de desarrollo para generar citas de prueba -->
+    <div style="margin-top: 30px; padding: 20px; background: #f8f9fa; border-radius: 10px; border: 2px dashed #dee2e6;">
+      <h4 style="color: #6c757d; margin-top: 0;">🛠️ Herramientas de Desarrollo</h4>
+      <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+        <button onclick="generarCitasPrueba()" style="background: #28a745; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">
+          🎲 Generar Citas de Prueba
+        </button>
+        <button onclick="limpiarCitas()" style="background: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; font-weight: bold;">
+          🗑️ Limpiar Todas las Citas
+        </button>
+      </div>
+      <div id="mensaje-desarrollo" style="margin-top: 10px; font-size: 14px; color: #6c757d;"></div>
+    </div>
   </div>
 
   <script>
@@ -353,6 +367,9 @@
     let semanaActual = new Date();
     semanaActual.setDate(semanaActual.getDate() - semanaActual.getDay() + 1); // Lunes
     let diaActual = new Date();
+    
+    // Debug: mostrar la semana que se está cargando
+    console.log('📅 Semana actual cargada:', semanaActual.toISOString().split('T')[0]);
 
     function formatearFecha(fecha) {
       const dia = fecha.getDate().toString().padStart(2, '0');
@@ -441,23 +458,30 @@
         dia.setDate(dia.getDate() + i);
         const fechaStr = formatearFecha(dia);
         
+        console.log(`🔍 Día ${i}: ${fechaStr} (${obtenerNombreDia(dia)})`);
+        
         if (dia.getDay() !== 0) { // No domingo
           try {
+            const fechaAPI = formatearFechaAPI(dia);
+            console.log(`🔍 Consultando citas para: ${fechaAPI} (${fechaStr})`);
+            
             const res = await fetch('/citas_dia', {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ dia: formatearFechaAPI(dia) })
+              body: JSON.stringify({ dia: fechaAPI })
             });
             const data = await res.json();
+            console.log(`📅 Citas encontradas para ${fechaAPI}:`, data.citas);
             citasSemana.push(...data.citas);
             
             // Actualizar celdas con citas
             data.citas.forEach(cita => {
               const celda = document.querySelector(`[data-fecha="${fechaStr}"][data-hora="${cita.hora}"]`);
+              console.log(`🔍 Buscando celda: ${fechaStr} ${cita.hora} - Encontrada: ${celda ? 'SÍ' : 'NO'}`);
               if (celda) {
                 celda.className = 'celda-hora ocupada';
                 celda.innerHTML = `
-                  <div class="cita-info">
+                  <div class="cita-info" onclick="mostrarOpcionesCita('${cita.nombre}', '${cita.servicio}', '${fechaStr}', '${cita.hora}', '${cita.telefono}')">
                     <div class="cita-nombre">${cita.nombre}</div>
                     <div class="cita-servicio">${cita.servicio}</div>
                   </div>
@@ -586,6 +610,106 @@
       `;
     }
 
+    function mostrarOpcionesCita(nombre, servicio, fecha, hora, telefono) {
+      // Crear modal con opciones
+      const modal = document.createElement('div');
+      modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10000;
+      `;
+      
+      const contenido = document.createElement('div');
+      contenido.style.cssText = `
+        background: white;
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        text-align: center;
+        max-width: 400px;
+        width: 90%;
+      `;
+      
+      contenido.innerHTML = `
+        <h3 style="margin-top: 0; color: #2196f3;">📅 Cita de ${nombre}</h3>
+        <p><strong>Servicio:</strong> ${servicio}</p>
+        <p><strong>Fecha:</strong> ${fecha}</p>
+        <p><strong>Hora:</strong> ${hora}</p>
+        <p><strong>Teléfono:</strong> ${telefono}</p>
+        
+        <div style="display: flex; gap: 15px; justify-content: center; margin-top: 25px;">
+          <button onclick="contactarWhatsApp('${telefono}', '${nombre}', '${servicio}', '${fecha}', '${hora}')" 
+                  style="background: #25d366; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: bold;">
+            📱 WhatsApp
+          </button>
+          <button onclick="llamarTelefono('${telefono}')" 
+                  style="background: #2196f3; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: bold;">
+            📞 Llamar
+          </button>
+          <button onclick="borrarCita('${fecha}', '${hora}', '${nombre}')" 
+                  style="background: #f44336; color: white; border: none; padding: 12px 20px; border-radius: 8px; cursor: pointer; font-weight: bold;">
+            🗑️ Borrar
+          </button>
+        </div>
+        
+        <button onclick="cerrarModal()" 
+                style="background: #666; color: white; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer; margin-top: 20px;">
+          ✕ Cerrar
+        </button>
+      `;
+      
+      modal.appendChild(contenido);
+      document.body.appendChild(modal);
+    }
+
+    function cerrarModal() {
+      const modal = document.querySelector('div[style*="position: fixed"]');
+      if (modal) {
+        modal.remove();
+      }
+    }
+
+    function contactarWhatsApp(telefono, nombre, servicio, fecha, hora) {
+      const mensaje = `Hola ${nombre}, te contactamos sobre tu cita de ${servicio} el ${fecha} a las ${hora}. ¿Todo bien?`;
+      const url = `https://wa.me/34${telefono}?text=${encodeURIComponent(mensaje)}`;
+      window.open(url, '_blank');
+      cerrarModal();
+    }
+
+    function llamarTelefono(telefono) {
+      window.open(`tel:${telefono}`, '_blank');
+      cerrarModal();
+    }
+
+    async function borrarCita(fecha, hora, nombre) {
+      if (confirm(`¿Estás seguro de que quieres borrar la cita de ${nombre} el ${fecha} a las ${hora}?`)) {
+        try {
+          const res = await fetch('/borrar_cita', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ fecha, hora })
+          });
+          const data = await res.json();
+          if (data.ok) {
+            alert('Cita borrada correctamente');
+            cargarCitasSemana(); // Recargar el calendario
+          } else {
+            alert('Error al borrar la cita: ' + data.msg);
+          }
+        } catch (error) {
+          alert('Error al borrar la cita: ' + error);
+        }
+        cerrarModal();
+      }
+    }
+
     // Cargar calendario al iniciar
     document.addEventListener('DOMContentLoaded', function() {
       cargarCalendario();
@@ -610,6 +734,68 @@
         cargarCalendarioDiario();
       }
     });
+
+    // Función para generar citas de prueba
+    async function generarCitasPrueba() {
+      const mensajeDiv = document.getElementById('mensaje-desarrollo');
+      mensajeDiv.innerHTML = '⏳ Generando citas de prueba...';
+      
+      try {
+        const res = await fetch('/generar_citas_prueba', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        const data = await res.json();
+        
+        if (data.ok) {
+          mensajeDiv.innerHTML = `✅ ${data.mensaje}`;
+          // Recargar el calendario para mostrar las nuevas citas
+          setTimeout(() => {
+            cargarCalendario();
+            if (window.innerWidth <= 768) {
+              cargarCalendarioDiario();
+            }
+          }, 1000);
+        } else {
+          mensajeDiv.innerHTML = `❌ Error: ${data.error}`;
+        }
+      } catch (error) {
+        mensajeDiv.innerHTML = `❌ Error de conexión: ${error.message}`;
+      }
+    }
+
+    // Función para limpiar todas las citas
+    async function limpiarCitas() {
+      if (!confirm('¿Estás seguro de que quieres eliminar todas las citas? Esta acción no se puede deshacer.')) {
+        return;
+      }
+      
+      const mensajeDiv = document.getElementById('mensaje-desarrollo');
+      mensajeDiv.innerHTML = '⏳ Limpiando citas...';
+      
+      try {
+        const res = await fetch('/limpiar_citas', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        const data = await res.json();
+        
+        if (data.ok) {
+          mensajeDiv.innerHTML = `✅ ${data.mensaje}`;
+          // Recargar el calendario para mostrar los cambios
+          setTimeout(() => {
+            cargarCalendario();
+            if (window.innerWidth <= 768) {
+              cargarCalendarioDiario();
+            }
+          }, 1000);
+        } else {
+          mensajeDiv.innerHTML = `❌ Error: ${data.error}`;
+        }
+      } catch (error) {
+        mensajeDiv.innerHTML = `❌ Error de conexión: ${error.message}`;
+      }
+    }
   </script>
 </body>
 </html> 
