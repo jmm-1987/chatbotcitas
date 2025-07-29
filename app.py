@@ -64,10 +64,28 @@ DB_PATH = 'citas.db'
 # Utilidad para normalizar fechas
 
 def normalizar_fecha(texto):
-    dt = dateparser.parse(texto, languages=['es'])
-    if dt:
-        return dt.strftime('%Y-%m-%d')
-    return texto  # Si no se puede, se deja igual
+    """Normaliza una fecha a formato YYYY-MM-DD"""
+    if not texto:
+        return None
+    
+    # Si ya está en formato YYYY-MM-DD, devolverlo tal cual
+    if len(texto) == 10 and texto[4] == '-' and texto[7] == '-':
+        try:
+            datetime.datetime.strptime(texto, '%Y-%m-%d')
+            return texto
+        except:
+            pass
+    
+    # Intentar con dateparser
+    try:
+        dt = dateparser.parse(texto, languages=['es'])
+        if dt:
+            return dt.strftime('%Y-%m-%d')
+    except:
+        pass
+    
+    # Si no se puede parsear, devolver el texto original
+    return texto
 
 def formatear_fecha_display(fecha_str):
     """Convierte fecha YYYY-MM-DD a DD/MM/AAAA"""
@@ -117,7 +135,7 @@ init_db()
 
 # Función para generar citas de prueba realistas
 def generar_citas_prueba():
-    """Genera citas de prueba realistas para esta semana"""
+    """Genera citas de prueba realistas desde hoy hasta final de agosto"""
     import random
     
     # Nombres realistas de clientes
@@ -149,31 +167,40 @@ def generar_citas_prueba():
         '18:00', '18:30', '19:00', '19:30'
     ]
     
-    # Generar fechas de esta semana (lunes a sábado)
+    # Calcular fechas desde hoy hasta final de agosto
     hoy = datetime.date.today()
-    lunes = hoy - datetime.timedelta(days=hoy.weekday())  # Lunes de esta semana
+    fin_agosto = datetime.date(2025, 8, 31)  # 31 de agosto de 2025
     
     citas_generadas = []
+    fecha_actual = hoy
     
-    # Generar citas para cada día de la semana (lunes a sábado)
-    for i in range(6):  # 6 días (lunes a sábado)
-        fecha = lunes + datetime.timedelta(days=i)
-        fecha_str = fecha.strftime('%Y-%m-%d')
-        dia_semana = fecha.weekday()
+    print(f"🎯 Generando citas desde {hoy.strftime('%d/%m/%Y')} hasta {fin_agosto.strftime('%d/%m/%Y')}")
+    
+    # Generar citas para cada día desde hoy hasta final de agosto
+    while fecha_actual <= fin_agosto:
+        fecha_str = fecha_actual.strftime('%Y-%m-%d')
+        dia_semana = fecha_actual.weekday()
         nombre_dia = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'][dia_semana]
         
         # Domingo no hay citas
         if dia_semana == 6:  # Domingo
+            fecha_actual += datetime.timedelta(days=1)
             continue
             
-        # Generar entre 4-12 citas por día (más ocupado los miércoles y viernes)
-        num_citas = random.randint(4, 12)
+        # Generar entre 3-15 citas por día (más ocupado los miércoles, jueves y viernes)
+        num_citas = random.randint(3, 10)
         if dia_semana == 2:  # Miércoles más ocupado
             num_citas = random.randint(8, 14)
             print(f"🎯 Miércoles {fecha_str}: {num_citas} citas")
+        elif dia_semana == 3:  # Jueves ocupado
+            num_citas = random.randint(6, 12)
+            print(f"📅 Jueves {fecha_str}: {num_citas} citas")
         elif dia_semana == 4:  # Viernes muy ocupado
-            num_citas = random.randint(12, 18)  # Aumentado para asegurar muchas citas
+            num_citas = random.randint(10, 16)
             print(f"🔥 Viernes {fecha_str}: {num_citas} citas")
+        elif dia_semana == 5:  # Sábado ocupado
+            num_citas = random.randint(8, 14)
+            print(f"🌟 Sábado {fecha_str}: {num_citas} citas")
         else:
             print(f"📅 {nombre_dia} {fecha_str}: {num_citas} citas")
         
@@ -196,6 +223,8 @@ def generar_citas_prueba():
                 'servicio': servicio,
                 'telefono': telefono
             })
+        
+        fecha_actual += datetime.timedelta(days=1)
     
     print(f"\n🎉 Total de citas generadas: {len(citas_generadas)}")
     return citas_generadas
@@ -207,7 +236,7 @@ def generar_citas_prueba_endpoint():
         citas = generar_citas_prueba()
         return jsonify({
             'ok': True, 
-            'mensaje': f'Se han generado {len(citas)} citas de prueba para esta semana',
+            'mensaje': f'Se han generado {len(citas)} citas de prueba desde hoy hasta final de agosto',
             'citas': citas
         })
     except Exception as e:
@@ -328,11 +357,22 @@ def reservar_cita():
 @app.route('/citas_dia', methods=['POST'])
 def citas_dia():
     data = request.get_json()
-    dia = normalizar_fecha(data.get('dia'))
-    print(f"🔍 Consultando citas para: {dia}")
+    dia_original = data.get('dia')
+    dia = normalizar_fecha(dia_original)
+    print(f"🔍 Consultando citas para: {dia_original} -> {dia}")
+    
+    if not dia:
+        print(f"❌ Error: fecha inválida '{dia_original}'")
+        return jsonify({'ocupadas': [], 'citas': [], 'error': 'Fecha inválida'})
     
     conn = sqlite3.connect(DB_PATH)
     c = conn.cursor()
+    
+    # Verificar si hay citas para esta fecha
+    c.execute('SELECT COUNT(*) FROM citas WHERE dia = ?', (dia,))
+    total_citas = c.fetchone()[0]
+    print(f"📊 Total de citas en BD para {dia}: {total_citas}")
+    
     c.execute('SELECT hora, nombre, servicio, telefono FROM citas WHERE dia = ?', (dia,))
     rows = c.fetchall()
     conn.close()

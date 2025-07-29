@@ -2,30 +2,22 @@
 # -*- coding: utf-8 -*-
 
 import sqlite3
-import random
 import datetime
+import random
 
-# Configuración de la base de datos
-DB_PATH = 'citas.db'
-
-def limpiar_citas():
-    conn = sqlite3.connect(DB_PATH)
+def limpiar_y_generar():
+    """Limpia todas las citas y las regenera correctamente"""
+    
+    print("🧹 Limpiando y regenerando citas...")
+    print("=" * 50)
+    
+    # Conectar a la base de datos
+    conn = sqlite3.connect('citas.db')
     c = conn.cursor()
+    
+    # Limpiar todas las citas
     c.execute('DELETE FROM citas')
-    conn.commit()
-    conn.close()
     print("🗑️ Todas las citas han sido eliminadas")
-
-def guardar_cita(nombre, servicio, dia, hora, telefono):
-    conn = sqlite3.connect(DB_PATH)
-    c = conn.cursor()
-    c.execute('INSERT INTO citas (nombre, servicio, dia, hora, telefono) VALUES (?, ?, ?, ?, ?)',
-              (nombre, servicio, dia, hora, telefono))
-    conn.commit()
-    conn.close()
-
-def generar_citas_semana_actual():
-    """Genera citas de prueba para la semana actual"""
     
     # Nombres realistas de clientes
     nombres = [
@@ -35,9 +27,7 @@ def generar_citas_semana_actual():
         "Pilar Romero", "Angeles Navarro", "Dolores Torres", "Concepción Domínguez", "Isabel Vázquez",
         "Lucía Hernández", "Paula Castro", "Adriana Morales", "Claudia Silva", "Valentina Rojas",
         "Camila Mendoza", "Sara Herrera", "Daniela Vega", "Gabriela Fuentes", "Carolina Reyes",
-        "Andrea Morales", "Natalia Jiménez", "Valeria Torres", "Mariana Silva", "Fernanda Castro",
-        "Isabella Rojas", "Sofía Mendoza", "Emma Herrera", "Olivia Vega", "Ava Fuentes",
-        "Mia Reyes", "Charlotte Morales", "Amelia Jiménez", "Harper Torres", "Evelyn Silva"
+        "Andrea Morales", "Natalia Jiménez", "Valeria Torres", "Mariana Silva", "Fernanda Castro"
     ]
     
     # Servicios disponibles
@@ -56,33 +46,40 @@ def generar_citas_semana_actual():
         '18:00', '18:30', '19:00', '19:30'
     ]
     
-    # Generar fechas de esta semana (lunes a sábado)
+    # Calcular fechas desde hoy hasta final de agosto
     hoy = datetime.date.today()
-    lunes = hoy - datetime.timedelta(days=hoy.weekday())  # Lunes de esta semana
+    fin_agosto = datetime.date(2025, 8, 31)  # 31 de agosto de 2025
     
-    print(f"📅 Generando citas para la semana del {lunes} al {lunes + datetime.timedelta(days=6)}")
+    citas_generadas = 0
+    fecha_actual = hoy
     
-    citas_generadas = []
+    print(f"🎯 Generando citas desde {hoy.strftime('%d/%m/%Y')} hasta {fin_agosto.strftime('%d/%m/%Y')}")
     
-    # Generar citas para cada día de la semana (lunes a sábado)
-    for i in range(6):  # 6 días (lunes a sábado)
-        fecha = lunes + datetime.timedelta(days=i)
-        fecha_str = fecha.strftime('%Y-%m-%d')
-        dia_semana = fecha.weekday()
+    # Generar citas para cada día desde hoy hasta final de agosto
+    while fecha_actual <= fin_agosto:
+        fecha_str = fecha_actual.strftime('%Y-%m-%d')
+        dia_semana = fecha_actual.weekday()
         nombre_dia = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'][dia_semana]
         
         # Domingo no hay citas
         if dia_semana == 6:  # Domingo
+            fecha_actual += datetime.timedelta(days=1)
             continue
             
-        # Generar entre 4-12 citas por día (más ocupado los miércoles y viernes)
-        num_citas = random.randint(4, 12)
+        # Generar entre 3-15 citas por día (más ocupado los miércoles, jueves y viernes)
+        num_citas = random.randint(3, 10)
         if dia_semana == 2:  # Miércoles más ocupado
             num_citas = random.randint(8, 14)
             print(f"🎯 Miércoles {fecha_str}: {num_citas} citas")
+        elif dia_semana == 3:  # Jueves ocupado
+            num_citas = random.randint(6, 12)
+            print(f"📅 Jueves {fecha_str}: {num_citas} citas")
         elif dia_semana == 4:  # Viernes muy ocupado
-            num_citas = random.randint(12, 18)  # Aumentado para asegurar muchas citas
+            num_citas = random.randint(10, 16)
             print(f"🔥 Viernes {fecha_str}: {num_citas} citas")
+        elif dia_semana == 5:  # Sábado ocupado
+            num_citas = random.randint(8, 14)
+            print(f"🌟 Sábado {fecha_str}: {num_citas} citas")
         else:
             print(f"📅 {nombre_dia} {fecha_str}: {num_citas} citas")
         
@@ -97,28 +94,18 @@ def generar_citas_semana_actual():
             telefono = f"6{random.randint(10000000, 99999999)}"  # Teléfono móvil español
             
             # Guardar la cita en la base de datos
-            guardar_cita(nombre, servicio, fecha_str, hora, telefono)
-            citas_generadas.append({
-                'fecha': fecha_str,
-                'hora': hora,
-                'nombre': nombre,
-                'servicio': servicio,
-                'telefono': telefono
-            })
+            c.execute('INSERT INTO citas (nombre, servicio, dia, hora, telefono) VALUES (?, ?, ?, ?, ?)',
+                      (nombre, servicio, fecha_str, hora, telefono))
+            citas_generadas += 1
+        
+        fecha_actual += datetime.timedelta(days=1)
     
-    print(f"\n🎉 Total de citas generadas: {len(citas_generadas)}")
-    return citas_generadas
+    # Confirmar cambios
+    conn.commit()
+    conn.close()
+    
+    print(f"\n🎉 Total de citas generadas: {citas_generadas}")
+    print("✅ Base de datos regenerada correctamente")
 
 if __name__ == "__main__":
-    print("🔄 Limpiar y generar citas para la semana actual")
-    print("=" * 50)
-    
-    # Limpiar citas existentes
-    print("🗑️ Limpiando citas existentes...")
-    limpiar_citas()
-    
-    # Generar nuevas citas para la semana actual
-    print("\n🎲 Generando citas para la semana actual...")
-    generar_citas_semana_actual()
-    
-    print("\n✅ ¡Listo! Ahora ve al panel para ver las citas.") 
+    limpiar_y_generar() 

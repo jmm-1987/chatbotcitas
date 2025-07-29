@@ -1,30 +1,56 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import sqlite3
 import datetime
 
-def mostrar_fechas_panel():
-    """Muestra las fechas que está consultando el panel"""
+def debug_fechas():
+    conn = sqlite3.connect('citas.db')
+    c = conn.cursor()
     
-    # Calcular la semana actual (como lo hace el panel)
-    hoy = datetime.date.today()
-    lunes = hoy - datetime.timedelta(days=hoy.weekday())  # Lunes de esta semana
-    
-    print("📅 Fechas que está consultando el panel:")
+    print("🔍 Debug de fechas del 1 al 8 de agosto:")
     print("=" * 50)
     
-    for i in range(7):  # 7 días (domingo a sábado)
-        fecha = lunes + datetime.timedelta(days=i)
-        fecha_str = fecha.strftime('%Y-%m-%d')
-        fecha_display = fecha.strftime('%d/%m/%Y')
-        nombre_dia = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'][fecha.weekday()]
+    # Verificar citas específicas del 1 al 8 de agosto
+    for dia in range(1, 9):
+        fecha = f"2025-08-{dia:02d}"
+        c.execute('SELECT COUNT(*) FROM citas WHERE dia = ?', (fecha,))
+        count = c.fetchone()[0]
         
-        print(f"  {i}: {fecha_str} ({fecha_display}) - {nombre_dia}")
+        # Verificar si la fecha es válida
+        try:
+            fecha_obj = datetime.datetime.strptime(fecha, '%Y-%m-%d')
+            nombre_dia = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'][fecha_obj.weekday()]
+            es_domingo = fecha_obj.weekday() == 6
+        except:
+            nombre_dia = "ERROR"
+            es_domingo = False
+        
+        print(f"📅 {fecha} ({nombre_dia}): {count} citas {'🚫 DOMINGO' if es_domingo else ''}")
+        
+        # Si hay citas, mostrar detalles
+        if count > 0:
+            c.execute('SELECT hora, nombre, servicio FROM citas WHERE dia = ? ORDER BY hora', (fecha,))
+            citas = c.fetchall()
+            for hora, nombre, servicio in citas:
+                print(f"   ⏰ {hora} - {nombre} - {servicio}")
     
-    print(f"\n📊 Resumen:")
-    print(f"  Hoy: {hoy}")
-    print(f"  Lunes de esta semana: {lunes}")
-    print(f"  Viernes de esta semana: {lunes + datetime.timedelta(days=4)}")
+    print("\n" + "=" * 50)
+    print("🔍 Verificando formato de fechas en la base de datos:")
+    
+    # Verificar todas las fechas en la base de datos
+    c.execute('SELECT DISTINCT dia FROM citas ORDER BY dia')
+    fechas = c.fetchall()
+    
+    for (fecha,) in fechas:
+        try:
+            fecha_obj = datetime.datetime.strptime(fecha, '%Y-%m-%d')
+            nombre_dia = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'][fecha_obj.weekday()]
+            print(f"✅ {fecha} ({nombre_dia}) - Formato correcto")
+        except Exception as e:
+            print(f"❌ {fecha} - Error de formato: {e}")
+    
+    conn.close()
 
 if __name__ == "__main__":
-    mostrar_fechas_panel() 
+    debug_fechas() 
